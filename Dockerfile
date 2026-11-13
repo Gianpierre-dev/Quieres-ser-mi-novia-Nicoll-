@@ -7,7 +7,7 @@ RUN npm install --global pnpm@10.30.3
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --prod --frozen-lockfile
 
-COPY servidor.mjs index.html confeti.min.js ./
+COPY servidor.mjs index.html confeti.min.js vista-previa.png ./
 
 USER node
 

@@ -24,6 +24,7 @@ const ARCHIVOS_PUBLICOS = {
   '/': { nombre: 'index.html', tipo: 'text/html; charset=utf-8' },
   '/index.html': { nombre: 'index.html', tipo: 'text/html; charset=utf-8' },
   '/confeti.min.js': { nombre: 'confeti.min.js', tipo: 'text/javascript; charset=utf-8' },
+  '/vista-previa.png': { nombre: 'vista-previa.png', tipo: 'image/png' },
 };
 
 const CABECERAS_PANEL = {
