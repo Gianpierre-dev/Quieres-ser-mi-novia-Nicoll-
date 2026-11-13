@@ -550,7 +550,50 @@
 
     .progreso span.actual { background: var(--rojo); transform: scale(1.4); }
 
-    .boton-pronto { margin-top: 18px; animation-delay: 500ms; }
+    .boton-pronto { margin-top: 14px; animation-delay: 500ms; }
+
+    /* Barritas sobre la foto: una por imagen, se llenan mientras esa imagen está en pantalla. */
+    .marco-tocable { cursor: pointer; }
+
+    .barras {
+      position: absolute;
+      top: 7px;
+      left: 7px;
+      right: 7px;
+      z-index: 2;
+      display: flex;
+      gap: 4px;
+    }
+
+    .barras span {
+      flex: 1;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.45);
+      border-radius: 2px;
+      box-shadow: 0 0 3px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+    }
+
+    .barras i { display: block; width: 0; height: 100%; background: #fff; }
+    .barras .completa i { width: 100%; }
+    .barras .activa i { animation: llenar var(--duracion) linear forwards; }
+
+    .pista-fotos {
+      margin: 12px 0 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--vino);
+    }
+
+    /* Mientras faltan fotos por ver, "Siguiente" queda apagado. */
+    .boton-si:disabled {
+      background: var(--lila);
+      color: var(--morado);
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .boton-si:disabled::after { display: none; }
 
     .boton-musica {
       position: fixed;
@@ -617,6 +660,10 @@
     }
 
     /* ---------- Animaciones ---------- */
+
+    @keyframes llenar {
+      to { width: 100%; }
+    }
 
     @keyframes fondo-vivo {
       0%, 100% { background-position: 0% 50%; }
@@ -811,6 +858,7 @@
           </article>
         </div>
         <div class="progreso" id="progreso" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        <p class="pista-fotos" id="pista-fotos" hidden>Toca la foto para pasar a la siguiente</p>
         <button type="button" class="boton boton-si boton-ancho boton-pronto" id="boton-siguiente">Siguiente</button>
       </div>
     </section>
@@ -895,6 +943,7 @@
     const momentos = [...document.querySelectorAll('.momento')];
     const puntosProgreso = [...document.querySelectorAll('#progreso span')];
     const botonSiguiente = document.getElementById('boton-siguiente');
+    const pistaFotos = document.getElementById('pista-fotos');
     const escenaPregunta = document.getElementById('escena-pregunta');
     const titulo = document.getElementById('titulo');
     const botonSi = document.getElementById('boton-si');
@@ -1052,23 +1101,60 @@
     /* ---------- Nuestra historia ---------- */
 
     let momentoActual = -1;
-    let paseDelMomento = null;
+    let temporizadorFoto = null;
+
+    // Agrega a cada marco con varias fotos una barrita por foto, como en las historias.
+    function crearBarrasDeFotos() {
+      for (const marco of document.querySelectorAll('.momento .marco')) {
+        const cantidad = marco.querySelectorAll('img').length;
+        if (cantidad < 2) continue;
+        const barras = document.createElement('div');
+        barras.className = 'barras';
+        barras.setAttribute('aria-hidden', 'true');
+        barras.style.setProperty('--duracion', `${INTERVALO_FOTOS_HISTORIA_MS}ms`);
+        barras.innerHTML = '<span><i></i></span>'.repeat(cantidad);
+        marco.appendChild(barras);
+        marco.classList.add('marco-tocable');
+      }
+    }
 
     function mostrarMomento(indice) {
-      clearInterval(paseDelMomento);
+      clearTimeout(temporizadorFoto);
       momentos.forEach((momento, posicion) => { momento.hidden = posicion !== indice; });
       puntosProgreso.forEach((punto, posicion) => punto.classList.toggle('actual', posicion === indice));
 
-      const imagenes = [...momentos[indice].querySelectorAll('img')];
-      imagenes.forEach((imagen, posicion) => imagen.classList.toggle('activa', posicion === 0));
-      if (imagenes.length > 1) {
-        let visible = 0;
-        paseDelMomento = setInterval(() => {
-          imagenes[visible].classList.remove('activa');
-          visible = (visible + 1) % imagenes.length;
-          imagenes[visible].classList.add('activa');
-        }, INTERVALO_FOTOS_HISTORIA_MS);
-      }
+      const marco = momentos[indice].querySelector('.marco');
+      const imagenes = [...marco.querySelectorAll('img')];
+      const barras = [...marco.querySelectorAll('.barras span')];
+      const tieneVariasFotos = imagenes.length > 1;
+      let visible = 0;
+
+      // Con varias fotos, "Siguiente" espera a que hayan pasado todas al menos una vez.
+      botonSiguiente.disabled = tieneVariasFotos;
+      pistaFotos.hidden = !tieneVariasFotos;
+
+      const mostrarFoto = (posicion) => {
+        clearTimeout(temporizadorFoto);
+        visible = posicion;
+        imagenes.forEach((imagen, orden) => imagen.classList.toggle('activa', orden === posicion));
+        if (!tieneVariasFotos) return;
+
+        barras.forEach((barra, orden) => {
+          barra.classList.remove('activa');
+          barra.classList.toggle('completa', orden < posicion);
+        });
+        void barras[posicion].offsetWidth; // Reinicia la animación de llenado.
+        barras[posicion].classList.add('activa');
+        temporizadorFoto = setTimeout(avanzarFoto, INTERVALO_FOTOS_HISTORIA_MS);
+      };
+
+      const avanzarFoto = () => {
+        if (visible === imagenes.length - 1) botonSiguiente.disabled = false;
+        mostrarFoto((visible + 1) % imagenes.length);
+      };
+
+      marco.onclick = tieneVariasFotos ? avanzarFoto : null;
+      mostrarFoto(0);
 
       const esElUltimo = indice === momentos.length - 1;
       botonSiguiente.textContent = esElUltimo ? 'Tengo una pregunta para ti' : 'Siguiente';
@@ -1085,7 +1171,7 @@
 
     function avanzarHistoria() {
       if (momentoActual < momentos.length - 1) return mostrarMomento(momentoActual + 1);
-      clearInterval(paseDelMomento);
+      clearTimeout(temporizadorFoto);
       mostrarPregunta();
     }
 
@@ -1173,6 +1259,7 @@
     });
     window.addEventListener('resize', reiniciarBotonNo);
 
+    crearBarrasDeFotos();
     registrarEvento('abrir_pagina');
     poblarCielo(CORAZONES_INICIALES);
   </script>
