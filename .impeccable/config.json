@@ -17,6 +17,24 @@
         "value": "fraunces",
         "createdAt": "2026-11-13T17:27:09.332Z",
         "reason": "agent decided: elegida por legibilidad tras la queja del usuario; tarjeta personal, no un sitio que compite por distincion"
+      },
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-13T21:47:14.556Z",
+        "reason": "agent decided: las fotos reciben su src por script al abrir el sobre (carga diferida); verificado en produccion que cargan las 6"
+      },
+      {
+        "rule": "buried-raster",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-13T21:47:15.560Z",
+        "reason": "agent decided: la opacidad 0 es el estado de reposo del fundido entre fotos; la foto activa pasa a opacidad 1, verificado en captura"
       }
     ]
   }
