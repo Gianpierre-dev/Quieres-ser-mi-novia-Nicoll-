@@ -710,10 +710,7 @@
     sobre.addEventListener('click', abrirCarta);
     botonSi.addEventListener('click', aceptar);
 
-    // Escritorio: se escapa al pasar el cursor. Celular y teclado: se escapa al tocarlo.
-    botonNo.addEventListener('pointerenter', (evento) => {
-      if (evento.pointerType === 'mouse') escaparBotonNo();
-    });
+    // El "No" solo se escapa cuando le hacen clic (o lo tocan en el celular).
     botonNo.addEventListener('click', (evento) => {
       evento.preventDefault();
       escaparBotonNo();

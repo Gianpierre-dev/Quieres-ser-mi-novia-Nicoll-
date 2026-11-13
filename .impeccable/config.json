@@ -11,6 +11,12 @@
         ],
         "createdAt": "2026-11-13T17:02:24.682Z",
         "reason": "agent decided: tarjeta romantica personal, la cursiva serif es el registro propio de una invitacion, no un hero de landing"
+      },
+      {
+        "rule": "overused-font",
+        "value": "fraunces",
+        "createdAt": "2026-11-13T17:27:09.332Z",
+        "reason": "agent decided: elegida por legibilidad tras la queja del usuario; tarjeta personal, no un sitio que compite por distincion"
       }
     ]
   }
