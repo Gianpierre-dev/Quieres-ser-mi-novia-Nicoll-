@@ -583,6 +583,23 @@
     const elegir = (lista) => lista[Math.floor(Math.random() * lista.length)];
     const esperar = (milisegundos) => new Promise((resolver) => setTimeout(resolver, sinMovimiento ? 0 : milisegundos));
 
+    /* ---------- Registro de actividad ---------- */
+
+    const IDENTIFICADOR_VISITA = typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : null;
+
+    // Avisa al servidor qué acción ocurrió. Si falla, la tarjeta sigue funcionando igual.
+    function registrarEvento(tipo) {
+      try {
+        const cuerpo = JSON.stringify({ tipo, visita: IDENTIFICADOR_VISITA });
+        const enviado = navigator.sendBeacon?.('/api/eventos', new Blob([cuerpo], { type: 'application/json' }));
+        if (!enviado) {
+          fetch('/api/eventos', { method: 'POST', body: cuerpo, keepalive: true, headers: { 'Content-Type': 'application/json' } }).catch(() => {});
+        }
+      } catch {
+        // El registro es opcional: no debe interrumpir la experiencia.
+      }
+    }
+
     /* ---------- Corazones de fondo ---------- */
 
     function crearCorazonFlotante() {
@@ -645,6 +662,7 @@
       if (sobre.classList.contains('abierto')) return;
       sobre.classList.add('abierto');
       sobre.disabled = true;
+      registrarEvento('abrir_carta');
       if (lanzarCorazones) {
         lanzarCorazones({ particleCount: 24, spread: 70, startVelocity: 26, scalar: 1.2, origin: { x: 0.5, y: 0.5 } });
       }
@@ -700,6 +718,7 @@
     /* ---------- Escena 3: el modal ---------- */
 
     function aceptar() {
+      registrarEvento('clic_si');
       escenaPregunta.inert = true;
       velo.hidden = false;
       modal.focus();
@@ -713,10 +732,12 @@
     // El "No" solo se escapa cuando le hacen clic (o lo tocan en el celular).
     botonNo.addEventListener('click', (evento) => {
       evento.preventDefault();
+      registrarEvento('clic_no');
       escaparBotonNo();
     });
     window.addEventListener('resize', reiniciarBotonNo);
 
+    registrarEvento('abrir_pagina');
     poblarCielo(CORAZONES_INICIALES);
   </script>
 </body>

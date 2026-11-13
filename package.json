@@ -1,0 +1,14 @@
+{
+  "name": "quieres-ser-mi-novia-nicoll",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node servidor.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  }
+}
