@@ -486,13 +486,6 @@
       to { transform: scale(1.22, 1.5); opacity: 0; }
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation: none !important;
-        transition: none !important;
-      }
-      .cielo, #lienzo-confeti { display: none; }
-    }
   </style>
 </head>
 <body>
@@ -578,10 +571,9 @@
     const cielo = document.getElementById('cielo');
     const lienzoConfeti = document.getElementById('lienzo-confeti');
 
-    const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const aleatorio = (minimo, maximo) => minimo + Math.random() * (maximo - minimo);
     const elegir = (lista) => lista[Math.floor(Math.random() * lista.length)];
-    const esperar = (milisegundos) => new Promise((resolver) => setTimeout(resolver, sinMovimiento ? 0 : milisegundos));
+    const esperar = (milisegundos) => new Promise((resolver) => setTimeout(resolver, milisegundos));
 
     /* ---------- Registro de actividad ---------- */
 
@@ -618,14 +610,13 @@
     }
 
     function poblarCielo(cantidad) {
-      if (sinMovimiento) return;
       for (let indice = 0; indice < cantidad; indice += 1) crearCorazonFlotante();
     }
 
     /* ---------- Confeti de corazones ---------- */
 
     function crearLanzador() {
-      if (sinMovimiento || typeof confetti !== 'function') return null;
+      if (typeof confetti !== 'function') return null;
       const lanzar = confetti.create(lienzoConfeti, { resize: true, useWorker: true });
       const formaCorazon = confetti.shapeFromPath({ path: TRAZO_CORAZON });
       return (opciones) => lanzar({
