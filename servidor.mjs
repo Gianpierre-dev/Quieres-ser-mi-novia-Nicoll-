@@ -62,6 +62,28 @@ function claveValida(claveRecibida) {
   return esperada.length === recibida.length && timingSafeEqual(esperada, recibida);
 }
 
+// La clave viaja en la cabecera Authorization (HTTP Basic), nunca en la URL.
+function claveDeLaPeticion(peticion) {
+  const [esquema, credenciales] = (peticion.headers.authorization ?? '').split(' ');
+  if (esquema !== 'Basic' || !credenciales) return '';
+  const decodificado = Buffer.from(credenciales, 'base64').toString('utf8');
+  const separador = decodificado.indexOf(':');
+  return separador === -1 ? '' : decodificado.slice(separador + 1);
+}
+
+// Evita que otro sitio dispare acciones del panel aprovechando la sesión del navegador.
+function esDelMismoOrigen(peticion) {
+  const sitio = peticion.headers['sec-fetch-site'];
+  if (sitio) return sitio === 'same-origin';
+  const origen = peticion.headers.origin;
+  if (!origen) return false;
+  try {
+    return new URL(origen).host === peticion.headers.host;
+  } catch {
+    return false;
+  }
+}
+
 async function leerCuerpo(peticion) {
   const fragmentos = [];
   let total = 0;
@@ -105,7 +127,7 @@ function numerarVisitas(eventos) {
   return numeros;
 }
 
-function construirPanel(eventos, clave) {
+function construirPanel(eventos) {
   const conteos = Object.fromEntries(Object.keys(ETIQUETAS_EVENTO).map((tipo) => [tipo, 0]));
   for (const evento of eventos) conteos[evento.tipo] += 1;
 
@@ -163,8 +185,8 @@ function construirPanel(eventos, clave) {
     <h2>Historial</h2>
     <div class="tabla">${historial}</div>
     <div class="acciones">
-      <a class="boton" href="/panel?clave=${encodeURIComponent(clave)}">Actualizar</a>
-      <form method="post" action="/panel/reiniciar?clave=${encodeURIComponent(clave)}" onsubmit="return confirm('Se borrará todo el historial. ¿Deseas continuar?')">
+      <a class="boton" href="/panel">Actualizar</a>
+      <form method="post" action="/panel/reiniciar" onsubmit="return confirm('Se borrará todo el historial. ¿Deseas continuar?')">
         <button type="submit">Reiniciar conteo</button>
       </form>
     </div>
@@ -173,23 +195,29 @@ function construirPanel(eventos, clave) {
 </html>`;
 }
 
-async function mostrarPanel(respuesta, clave) {
+async function mostrarPanel(respuesta) {
   const { rows: eventos } = await baseDeDatos.query('SELECT tipo, visita, creado_en FROM eventos ORDER BY creado_en ASC, id ASC');
-  responder(respuesta, 200, construirPanel(eventos, clave), {
+  responder(respuesta, 200, construirPanel(eventos), {
     'Content-Type': 'text/html; charset=utf-8',
+    'Cache-Control': 'no-store',
+    'Referrer-Policy': 'no-referrer',
+  });
+}
+
+async function reiniciarConteo(respuesta) {
+  await baseDeDatos.query('TRUNCATE eventos RESTART IDENTITY');
+  responder(respuesta, 303, '', { Location: '/panel' });
+}
+
+function pedirCredenciales(respuesta) {
+  responder(respuesta, 401, 'Se requiere la clave del panel', {
+    'WWW-Authenticate': 'Basic realm="Panel de la tarjeta", charset="UTF-8"',
     'Cache-Control': 'no-store',
   });
 }
 
-async function reiniciarConteo(respuesta, clave) {
-  await baseDeDatos.query('TRUNCATE eventos RESTART IDENTITY');
-  responder(respuesta, 303, '', { Location: `/panel?clave=${encodeURIComponent(clave)}` });
-}
-
 async function atender(peticion, respuesta) {
-  const url = new URL(peticion.url, 'http://localhost');
-  const { pathname: ruta } = url;
-  const clave = url.searchParams.get('clave') ?? '';
+  const { pathname: ruta } = new URL(peticion.url, 'http://localhost');
 
   if (peticion.method === 'GET' && Object.hasOwn(ARCHIVOS_PUBLICOS, ruta)) {
     return servirArchivo(respuesta, ARCHIVOS_PUBLICOS[ruta]);
@@ -197,9 +225,12 @@ async function atender(peticion, respuesta) {
   if (peticion.method === 'POST' && ruta === '/api/eventos') return registrarEvento(peticion, respuesta);
 
   if (ruta === '/panel' || ruta === '/panel/reiniciar') {
-    if (!claveValida(clave)) return responder(respuesta, 404, 'No encontrado');
-    if (peticion.method === 'GET' && ruta === '/panel') return mostrarPanel(respuesta, clave);
-    if (peticion.method === 'POST' && ruta === '/panel/reiniciar') return reiniciarConteo(respuesta, clave);
+    if (!claveValida(claveDeLaPeticion(peticion))) return pedirCredenciales(respuesta);
+    if (peticion.method === 'GET' && ruta === '/panel') return mostrarPanel(respuesta);
+    if (peticion.method === 'POST' && ruta === '/panel/reiniciar') {
+      if (!esDelMismoOrigen(peticion)) return responder(respuesta, 403, 'Origen no permitido');
+      return reiniciarConteo(respuesta);
+    }
   }
 
   return responder(respuesta, 404, 'No encontrado');
