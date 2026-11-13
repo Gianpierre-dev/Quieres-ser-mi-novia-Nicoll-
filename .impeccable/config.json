@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "italic-serif-display",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-13T17:02:24.682Z",
+        "reason": "agent decided: tarjeta romantica personal, la cursiva serif es el registro propio de una invitacion, no un hero de landing"
+      }
+    ]
+  }
+}

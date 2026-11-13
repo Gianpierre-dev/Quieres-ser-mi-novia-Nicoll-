@@ -2,25 +2,29 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffd3e4">
   <title>Para Nicoll</title>
   <meta name="description" content="Una pregunta para Nicoll.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,500&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --ciruela: #2a0d1c;
-      --ciruela-clara: #4a1630;
-      --papel: #fff0f3;
-      --rosa: #f4b8c6;
-      --carmesi: #b3123a;
-      --carmesi-oscuro: #8c0c2c;
-      --tinta: #3a0f20;
-      --dorado: #e2b25a;
+      --rosa-pastel: #ffd3e4;
+      --rosa-papel: #fff0f6;
+      --lila: #dcc7ff;
+      --lila-fuerte: #b993f5;
+      --morado: #5b1fa6;
+      --morado-oscuro: #35105f;
+      --rojo: #e0173f;
+      --rojo-oscuro: #b50d30;
+      --salida-suave: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     *, *::before, *::after { box-sizing: border-box; }
+
+    ::selection { background: var(--rojo); color: var(--rosa-papel); }
 
     html, body { height: 100%; }
 
@@ -29,28 +33,101 @@
       min-height: 100dvh;
       display: grid;
       place-items: center;
-      padding: 24px 16px;
+      padding:
+        max(20px, env(safe-area-inset-top))
+        max(16px, env(safe-area-inset-right))
+        max(20px, env(safe-area-inset-bottom))
+        max(16px, env(safe-area-inset-left));
       overflow: hidden;
       font-family: "Figtree", system-ui, sans-serif;
-      color: var(--tinta);
-      background:
-        radial-gradient(120% 80% at 50% 110%, var(--ciruela-clara) 0%, transparent 60%),
-        var(--ciruela);
+      color: var(--morado-oscuro);
+      background: linear-gradient(135deg, var(--rosa-pastel), var(--lila), var(--rosa-pastel), var(--lila-fuerte));
+      background-size: 300% 300%;
+      animation: fondo-vivo 16s ease-in-out infinite;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ---------- Fondo ---------- */
+
+    .fondo, .cielo, #lienzo-confeti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .fondo { overflow: hidden; }
+
+    .mancha {
+      position: absolute;
+      width: 70vmax;
+      height: 70vmax;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.55;
+      animation: deriva 18s ease-in-out infinite alternate;
+    }
+
+    .mancha-rosa { background: #ff9fc4; top: -30vmax; left: -25vmax; }
+    .mancha-morada { background: #a56bf0; bottom: -35vmax; right: -25vmax; animation-duration: 22s; animation-delay: -6s; }
+    .mancha-roja { background: #ff6f8f; width: 40vmax; height: 40vmax; top: 35%; left: 45%; opacity: 0.3; animation-duration: 26s; animation-delay: -11s; }
+
+    .cielo { overflow: hidden; }
+
+    .corazon-flotante {
+      position: absolute;
+      bottom: -48px;
+      opacity: 0;
+      animation: subir linear infinite;
+    }
+
+    .corazon-flotante svg { display: block; width: 100%; height: 100%; animation: balanceo 3s ease-in-out infinite alternate; }
+
+    #lienzo-confeti { width: 100%; height: 100%; z-index: 3; }
+
+    /* ---------- Tarjeta ---------- */
+
+    .flotador {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 400px);
     }
 
     .tarjeta {
       position: relative;
-      z-index: 1;
-      width: min(100%, 520px);
-      padding: clamp(36px, 8vw, 64px) clamp(24px, 6vw, 56px);
+      padding: 44px 22px 26px;
       text-align: center;
-      background: var(--papel);
-      border-radius: 6px;
+      background: var(--rosa-papel);
+      border: 2px solid var(--lila);
+      border-radius: 28px;
       box-shadow:
-        0 0 0 1px var(--rosa),
-        0 0 0 10px var(--papel),
-        0 0 0 11px var(--dorado),
-        0 40px 80px -30px rgba(0, 0, 0, 0.7);
+        0 2px 0 #fff inset,
+        0 18px 40px -12px rgba(91, 31, 166, 0.45),
+        0 40px 80px -30px rgba(224, 23, 63, 0.35);
+      animation: entrar 900ms var(--salida-suave) both;
+    }
+
+    .tarjeta.celebrando { animation: festejo 700ms var(--salida-suave) both; }
+
+    .emblema {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      width: 60px;
+      height: 60px;
+      margin-left: -30px;
+      display: grid;
+      place-items: center;
+      background: var(--rosa-papel);
+      border: 2px solid var(--lila);
+      border-radius: 50%;
+      box-shadow: 0 8px 18px -8px rgba(91, 31, 166, 0.6);
+    }
+
+    .emblema svg {
+      width: 30px;
+      height: 30px;
+      fill: var(--rojo);
+      animation: latido 1.2s ease-in-out infinite;
     }
 
     .titulo {
@@ -58,145 +135,257 @@
       font-family: "Bodoni Moda", "Didot", Georgia, serif;
       font-style: italic;
       font-weight: 500;
-      font-size: clamp(2.25rem, 9vw, 3.5rem);
-      line-height: 1.08;
+      font-size: clamp(2.1rem, 10.5vw, 2.9rem);
+      line-height: 1.1;
       letter-spacing: -0.01em;
-      color: var(--carmesi);
+      color: var(--morado);
       text-wrap: balance;
     }
 
-    .titulo .nombre {
+    .palabra {
+      display: inline-block;
+      animation: revelar 800ms var(--salida-suave) both;
+      animation-delay: calc(350ms + var(--orden) * 130ms);
+    }
+
+    .nombre {
       display: block;
+      margin-top: 0.08em;
       font-style: normal;
+      font-weight: 700;
+      font-size: 1.28em;
+      color: var(--rojo);
+      animation:
+        revelar 900ms var(--salida-suave) both,
+        respirar 2.6s ease-in-out 1.9s infinite;
+      animation-delay: 1000ms, 1900ms;
     }
 
     .acciones {
       display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-top: clamp(32px, 7vw, 48px);
+      gap: 12px;
+      margin-top: 30px;
+      animation: revelar 800ms var(--salida-suave) 1300ms both;
     }
 
     .boton {
-      min-width: 112px;
-      padding: 14px 28px;
+      position: relative;
+      flex: 1 1 0;
+      min-height: 54px;
+      padding: 14px 20px;
       font: inherit;
-      font-weight: 600;
-      font-size: 1.0625rem;
+      font-weight: 700;
+      font-size: 1.125rem;
       border-radius: 999px;
-      border: 1.5px solid var(--carmesi);
+      border: 2px solid transparent;
       cursor: pointer;
-      transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
+      touch-action: manipulation;
+      transition: background-color 200ms ease, box-shadow 200ms ease, transform 200ms var(--salida-suave);
     }
 
     .boton:focus-visible {
-      outline: 3px solid var(--dorado);
+      outline: 3px solid var(--morado);
       outline-offset: 3px;
     }
 
     .boton-si {
-      background: var(--carmesi);
-      color: var(--papel);
+      background: var(--rojo);
+      color: #fff;
+      box-shadow: 0 10px 22px -8px rgba(224, 23, 63, 0.75);
     }
 
-    .boton-si:hover { background: var(--carmesi-oscuro); }
-    .boton-si:active { transform: scale(0.97); }
+    .boton-si::after {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      border: 2px solid var(--rojo);
+      animation: onda 1.8s ease-out infinite;
+      pointer-events: none;
+    }
 
+    .boton-si:hover { background: var(--rojo-oscuro); transform: translateY(-2px); }
+    .boton-si:active { transform: scale(0.96); }
+
+    /* El botón "No" no tiene ninguna animación de movimiento: se queda en su lugar. */
     .boton-no {
       background: transparent;
-      color: var(--carmesi);
+      color: var(--morado);
+      border-color: var(--lila-fuerte);
     }
 
-    .boton-no:hover { background: rgba(179, 18, 58, 0.08); }
+    .boton-no:hover { background: rgba(185, 147, 245, 0.2); }
 
     .aviso {
       min-height: 1.5em;
-      margin: 20px 0 0;
+      margin: 16px 0 0;
       font-size: 0.9375rem;
-      color: var(--tinta);
+      font-weight: 600;
+      color: var(--morado);
     }
+
+    .aviso.visible { animation: revelar 500ms var(--salida-suave) both; }
+
+    /* ---------- Respuesta ---------- */
 
     .respuesta {
       margin: 0;
+      padding: 6px 0 12px;
       font-family: "Bodoni Moda", "Didot", Georgia, serif;
       font-weight: 500;
-      font-size: clamp(1.5rem, 5.6vw, 2.125rem);
+      font-size: clamp(1.4rem, 6.4vw, 1.75rem);
       line-height: 1.3;
-      color: var(--carmesi);
-      text-wrap: pretty;
+      color: var(--morado);
+      text-wrap: balance;
     }
 
     .respuesta:focus { outline: none; }
 
-    .respuesta span { display: block; }
-    .respuesta span + span { margin-top: 0.6em; }
-    .respuesta .cierre { font-style: italic; }
+    .respuesta span {
+      display: block;
+      animation: revelar 900ms var(--salida-suave) both;
+    }
+
+    .respuesta span + span { margin-top: 0.65em; }
+    .respuesta span:nth-child(1) { animation-delay: 250ms; }
+    .respuesta span:nth-child(2) { animation-delay: 1300ms; }
+    .respuesta span:nth-child(3) { animation-delay: 2700ms; }
+
+    .respuesta .cierre {
+      font-style: italic;
+      font-size: 1.12em;
+      color: var(--rojo);
+    }
 
     [hidden] { display: none !important; }
 
-    .cielo {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
+    /* ---------- Pantallas más grandes ---------- */
+
+    @media (min-width: 640px) {
+      .flotador { width: min(100%, 500px); }
+      .tarjeta { padding: 60px 48px 36px; border-radius: 32px; }
+      .titulo { font-size: 3.25rem; }
+      .acciones { gap: 16px; margin-top: 40px; }
+      .respuesta { font-size: 2rem; }
     }
 
-    .corazon {
-      position: absolute;
-      bottom: -40px;
-      color: var(--rosa);
-      opacity: 0;
-      animation: subir linear forwards;
+    /* ---------- Animaciones ---------- */
+
+    @keyframes fondo-vivo {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    @keyframes deriva {
+      from { transform: translate(0, 0) scale(1); }
+      to { transform: translate(12vmax, 8vmax) scale(1.2); }
     }
 
     @keyframes subir {
-      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-      12% { opacity: 0.9; }
-      100% { transform: translateY(-115vh) rotate(var(--giro)); opacity: 0; }
+      0% { transform: translate(0, 0); opacity: 0; }
+      10% { opacity: var(--opacidad); }
+      85% { opacity: var(--opacidad); }
+      100% { transform: translate(var(--desvio), -115vh); opacity: 0; }
     }
 
-    @keyframes aparecer {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes balanceo {
+      from { transform: rotate(-18deg); }
+      to { transform: rotate(18deg); }
     }
 
-    .respuesta span { animation: aparecer 700ms ease both; }
-    .respuesta span:nth-child(2) { animation-delay: 900ms; }
-    .respuesta span:nth-child(3) { animation-delay: 2000ms; }
+    @keyframes entrar {
+      from { opacity: 0; transform: scale(0.82) translateY(30px); filter: blur(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+    }
+
+    @keyframes festejo {
+      0% { transform: scale(0.9) rotate(-2deg); }
+      55% { transform: scale(1.05) rotate(1deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
+
+    @keyframes revelar {
+      from { opacity: 0; transform: translateY(14px); filter: blur(6px); }
+      to { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+
+    @keyframes latido {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.28); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.18); }
+      60% { transform: scale(1); }
+    }
+
+    @keyframes respirar {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes onda {
+      from { transform: scale(1); opacity: 0.8; }
+      to { transform: scale(1.22, 1.5); opacity: 0; }
+    }
 
     @media (prefers-reduced-motion: reduce) {
-      .respuesta span { animation: none; }
-      .corazon { display: none; }
-      .boton { transition: none; }
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+      .cielo, #lienzo-confeti { display: none; }
     }
   </style>
 </head>
 <body>
+  <div class="fondo" aria-hidden="true">
+    <div class="mancha mancha-rosa"></div>
+    <div class="mancha mancha-morada"></div>
+    <div class="mancha mancha-roja"></div>
+  </div>
   <div class="cielo" id="cielo" aria-hidden="true"></div>
+  <canvas id="lienzo-confeti" aria-hidden="true"></canvas>
 
-  <main class="tarjeta">
-    <section id="pregunta">
-      <h1 class="titulo">¿Quieres ser mi novia <span class="nombre">Nicoll?</span></h1>
-      <div class="acciones">
-        <button type="button" class="boton boton-si" id="boton-si">Sí</button>
-        <button type="button" class="boton boton-no" id="boton-no">No</button>
+  <div class="flotador">
+    <main class="tarjeta" id="tarjeta">
+      <div class="emblema" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>
       </div>
-      <p class="aviso" id="aviso" role="status" aria-live="polite"></p>
-    </section>
 
-    <section id="respuesta" hidden>
-      <p class="respuesta" id="texto-respuesta" tabindex="-1">
-        <span>Lo sabía mi amor.</span>
-        <span>Yo también quiero estar contigo hasta el fin de los tiempos.</span>
-        <span class="cierre">Te amo como no tienes idea.</span>
-      </p>
-    </section>
-  </main>
+      <section id="pregunta">
+        <h1 class="titulo">
+          <span class="palabra" style="--orden: 0">¿Quieres</span>
+          <span class="palabra" style="--orden: 1">ser</span>
+          <span class="palabra" style="--orden: 2">mi</span>
+          <span class="palabra" style="--orden: 3">novia</span>
+          <span class="nombre">Nicoll?</span>
+        </h1>
+        <div class="acciones">
+          <button type="button" class="boton boton-si" id="boton-si">Sí</button>
+          <button type="button" class="boton boton-no" id="boton-no">No</button>
+        </div>
+        <p class="aviso" id="aviso" role="status" aria-live="polite"></p>
+      </section>
 
+      <section id="respuesta" hidden>
+        <p class="respuesta" id="texto-respuesta" tabindex="-1">
+          <span>Lo sabía mi amor.</span>
+          <span>Yo también quiero estar contigo hasta el fin de los tiempos.</span>
+          <span class="cierre">Te amo como no tienes idea.</span>
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script src="confeti.min.js"></script>
   <script>
-    const CANTIDAD_CORAZONES = 26;
+    const TRAZO_CORAZON = 'M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z';
+    const COLORES = ['#e0173f', '#ff7aa8', '#b993f5', '#5b1fa6', '#ffffff'];
+    const CORAZONES_INICIALES = 14;
+    const CORAZONES_FESTEJO = 22;
+    const INTERVALO_FESTEJO_MS = 2600;
     const MENSAJE_NO = 'Piénsalo otra vez, mi amor.';
 
+    const tarjeta = document.getElementById('tarjeta');
     const seccionPregunta = document.getElementById('pregunta');
     const seccionRespuesta = document.getElementById('respuesta');
     const textoRespuesta = document.getElementById('texto-respuesta');
@@ -204,37 +393,80 @@
     const botonNo = document.getElementById('boton-no');
     const aviso = document.getElementById('aviso');
     const cielo = document.getElementById('cielo');
+    const lienzoConfeti = document.getElementById('lienzo-confeti');
 
+    const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const aleatorio = (minimo, maximo) => minimo + Math.random() * (maximo - minimo);
+    const elegir = (lista) => lista[Math.floor(Math.random() * lista.length)];
 
-    function soltarCorazones() {
-      for (let indice = 0; indice < CANTIDAD_CORAZONES; indice += 1) {
-        const corazon = document.createElement('span');
-        corazon.className = 'corazon';
-        corazon.textContent = '♥';
-        corazon.style.left = `${aleatorio(2, 96)}%`;
-        corazon.style.fontSize = `${aleatorio(14, 38)}px`;
-        corazon.style.animationDuration = `${aleatorio(5, 10)}s`;
-        corazon.style.animationDelay = `${aleatorio(0, 4)}s`;
-        corazon.style.setProperty('--giro', `${aleatorio(-40, 40)}deg`);
-        cielo.appendChild(corazon);
-      }
+    function crearCorazonFlotante() {
+      const corazon = document.createElement('span');
+      const lado = aleatorio(14, 34);
+      corazon.className = 'corazon-flotante';
+      corazon.style.left = `${aleatorio(0, 94)}%`;
+      corazon.style.width = `${lado}px`;
+      corazon.style.height = `${lado}px`;
+      corazon.style.animationDuration = `${aleatorio(7, 14)}s`;
+      corazon.style.animationDelay = `${aleatorio(-14, 0)}s`;
+      corazon.style.setProperty('--desvio', `${aleatorio(-60, 60)}px`);
+      corazon.style.setProperty('--opacidad', aleatorio(0.45, 0.9).toFixed(2));
+      corazon.innerHTML = `<svg viewBox="0 0 24 24" fill="${elegir(COLORES)}"><path d="${TRAZO_CORAZON}"/></svg>`;
+      cielo.appendChild(corazon);
+    }
+
+    function poblarCielo(cantidad) {
+      if (sinMovimiento) return;
+      for (let indice = 0; indice < cantidad; indice += 1) crearCorazonFlotante();
+    }
+
+    function crearLanzador() {
+      if (sinMovimiento || typeof confetti !== 'function') return null;
+      const lanzar = confetti.create(lienzoConfeti, { resize: true, useWorker: true });
+      const formaCorazon = confetti.shapeFromPath({ path: TRAZO_CORAZON });
+      return (opciones) => lanzar({
+        shapes: [formaCorazon],
+        colors: COLORES,
+        scalar: 1.6,
+        ticks: 260,
+        ...opciones,
+      });
+    }
+
+    function festejar() {
+      const lanzar = crearLanzador();
+      if (!lanzar) return;
+
+      lanzar({ particleCount: 90, spread: 100, startVelocity: 42, origin: { x: 0.5, y: 0.6 } });
+      setTimeout(() => lanzar({ particleCount: 50, angle: 60, spread: 70, origin: { x: 0, y: 0.75 } }), 250);
+      setTimeout(() => lanzar({ particleCount: 50, angle: 120, spread: 70, origin: { x: 1, y: 0.75 } }), 450);
+
+      setInterval(() => {
+        lanzar({
+          particleCount: 26,
+          spread: 80,
+          startVelocity: 30,
+          origin: { x: aleatorio(0.15, 0.85), y: aleatorio(0.3, 0.7) },
+        });
+      }, INTERVALO_FESTEJO_MS);
     }
 
     function aceptar() {
       seccionPregunta.hidden = true;
       seccionRespuesta.hidden = false;
+      tarjeta.classList.add('celebrando');
       textoRespuesta.focus();
-      soltarCorazones();
+      poblarCielo(CORAZONES_FESTEJO);
+      festejar();
     }
 
-    // El botón "No" se queda en su lugar: solo muestra un aviso.
     function rechazar() {
       aviso.textContent = MENSAJE_NO;
+      aviso.classList.add('visible');
     }
 
     botonSi.addEventListener('click', aceptar);
     botonNo.addEventListener('click', rechazar);
+    poblarCielo(CORAZONES_INICIALES);
   </script>
 </body>
 </html>
