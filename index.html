@@ -449,6 +449,76 @@
 
     .modal:focus { outline: none; }
 
+    /* El modal va sobre una pila de hojas giradas, con borde de color en movimiento. */
+    .pila {
+      position: relative;
+      width: min(100%, 400px);
+      margin-block: auto;
+      animation: brotar 700ms var(--salida-suave) both;
+    }
+
+    .hoja-atras {
+      position: absolute;
+      inset: 0;
+      border-radius: 28px;
+    }
+
+    .hoja-atras-1 {
+      background: var(--lila);
+      rotate: -4deg;
+      box-shadow: 0 18px 34px -16px rgba(53, 16, 95, 0.75);
+    }
+
+    .hoja-atras-2 { background: #ffc2d8; rotate: 3deg; }
+
+    .pila .modal {
+      width: 100%;
+      margin: 0;
+      border: 3px solid transparent;
+      background:
+        linear-gradient(165deg, #fffafc 0%, var(--rosa-papel) 45%, #ffdcec 100%) padding-box,
+        linear-gradient(120deg, var(--rojo), var(--lila-fuerte), #ff8fb8, var(--morado), var(--rojo)) border-box;
+      background-size: 100% 100%, 300% 300%;
+      box-shadow:
+        0 2px 0 #fff inset,
+        0 30px 70px -20px rgba(53, 16, 95, 0.85),
+        0 0 70px -12px rgba(255, 120, 170, 0.75);
+      animation: borde-vivo 5s ease-in-out infinite alternate;
+    }
+
+    .modal .emblema {
+      top: -40px;
+      width: 76px;
+      height: 76px;
+      margin-left: -38px;
+      background: var(--rojo);
+      border: 3px solid #fff;
+      box-shadow: 0 12px 26px -8px rgba(224, 23, 63, 0.85);
+    }
+
+    .modal .emblema::after {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      border: 2px solid var(--rojo);
+      border-radius: 50%;
+      animation: pulso 1.8s ease-out infinite;
+    }
+
+    .modal .emblema svg { width: 38px; height: 38px; fill: #fff; }
+
+    .adorno {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0.8;
+      animation: mecer 3.4s ease-in-out infinite alternate;
+    }
+
+    .adorno-1 { top: 22px; left: 20px; width: 24px; fill: var(--lila-fuerte); rotate: -18deg; }
+    .adorno-2 { top: 30px; right: 22px; width: 17px; fill: var(--rojo); rotate: 14deg; animation-delay: -1.2s; }
+    .adorno-3 { bottom: 20px; left: 24px; width: 18px; fill: #ff8fb8; rotate: 12deg; animation-delay: -2.1s; }
+    .adorno-4 { bottom: 24px; right: 20px; width: 27px; fill: var(--lila-fuerte); rotate: -10deg; animation-delay: -0.6s; }
+
     /* Las fotos van apiladas en un marco y se alternan con un fundido. */
     .fotos {
       position: relative;
@@ -653,10 +723,37 @@
     .respuesta span:nth-child(2) { animation-delay: 1500ms; }
     .respuesta span:nth-child(3) { animation-delay: 2900ms; }
 
+    /* Tres niveles: la frase de entrada grande, el medio más calmo y el cierre subrayado a mano. */
+    .respuesta .respuesta-inicio { font-size: 1.22em; line-height: 1.15; }
+
+    .respuesta .respuesta-medio {
+      font-size: 0.84em;
+      line-height: 1.4;
+      color: var(--vino);
+    }
+
     .respuesta .cierre {
+      position: relative;
+      padding-bottom: 16px;
       font-style: italic;
-      font-size: 1.12em;
+      font-size: 1.2em;
+      line-height: 1.2;
       color: var(--rojo-texto);
+    }
+
+    .subrayado {
+      position: absolute;
+      left: 10%;
+      bottom: 0;
+      width: 80%;
+      height: 12px;
+      fill: none;
+      stroke: var(--rojo);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation: trazar 900ms ease-out 3900ms forwards;
     }
 
     /* ---------- Pantallas más grandes ---------- */
@@ -667,11 +764,31 @@
       .titulo { font-size: 3.25rem; }
       .acciones { gap: 16px; margin-top: 40px; }
       .sobre { width: 380px; }
-      .modal { width: min(100%, 500px); padding: 60px 48px 44px; }
+      .pila { width: min(100%, 500px); }
+      .pila .modal { padding: 60px 48px 44px; }
       .respuesta { font-size: 2rem; }
     }
 
     /* ---------- Animaciones ---------- */
+
+    @keyframes borde-vivo {
+      from { background-position: 0 0, 0% 50%; }
+      to { background-position: 0 0, 100% 50%; }
+    }
+
+    @keyframes pulso {
+      from { transform: scale(1); opacity: 0.8; }
+      to { transform: scale(1.6); opacity: 0; }
+    }
+
+    @keyframes mecer {
+      from { transform: translateY(-4px); }
+      to { transform: translateY(5px); }
+    }
+
+    @keyframes trazar {
+      to { stroke-dashoffset: 0; }
+    }
 
     @keyframes llenar {
       to { width: 100%; }
@@ -903,10 +1020,17 @@
   </main>
 
   <div class="velo" id="velo" hidden>
+   <div class="pila">
+    <span class="hoja-atras hoja-atras-1" aria-hidden="true"></span>
+    <span class="hoja-atras hoja-atras-2" aria-hidden="true"></span>
     <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="texto-respuesta" tabindex="-1">
       <div class="emblema" aria-hidden="true">
         <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>
       </div>
+      <svg class="adorno adorno-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>
+      <svg class="adorno adorno-2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>
+      <svg class="adorno adorno-3" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>
+      <svg class="adorno adorno-4" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>
       <div class="fotos" id="fotos" role="img" aria-label="Fotos de nosotros">
         <img data-origen="img/1.png" alt="" decoding="async">
         <img data-origen="img/2.png" alt="" decoding="async">
@@ -916,11 +1040,12 @@
         <img data-origen="img/6.png" alt="" decoding="async">
       </div>
       <p class="respuesta" id="texto-respuesta">
-        <span>Lo sabía, mi amor.</span>
-        <span>Yo también quiero estar contigo hasta el fin de los tiempos.</span>
-        <span class="cierre">Te amo como no tienes idea.</span>
+        <span class="respuesta-inicio">Lo sabía, mi amor.</span>
+        <span class="respuesta-medio">Yo también quiero estar contigo hasta el fin de los tiempos.</span>
+        <span class="cierre">Te amo como no tienes idea.<svg class="subrayado" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="100" d="M3 8c30-6 62-6 97-3s68 3 97-2"/></svg></span>
       </p>
     </div>
+   </div>
   </div>
 
   <audio id="cancion" src="cancion.mp3" preload="none" loop></audio>
