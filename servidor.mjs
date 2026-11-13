@@ -16,7 +16,7 @@ const DURACION_SESION_MS = 7 * 24 * 60 * 60 * 1000;
 const TRAZO_CORAZON = 'M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z';
 
 const CANTIDAD_FOTOS = 6;
-const FOTOS_HISTORIA = ['menciones', 'videollamada-1', 'videollamada-2', 'videollamada-3', 'juntos-1', 'juntos-2', 'juntos-3', 'ella-1', 'ella-2', 'ella-3', 'ella-4', 'ella-5', 'ella-6'];
+const FOTOS_HISTORIA = ['menciones', 'videollamada-1', 'videollamada-2', 'videollamada-3', 'juntos-1', 'juntos-2', 'juntos-3', 'juntos-4','ella-1', 'ella-2', 'ella-3', 'ella-4', 'ella-5', 'ella-6'];
 const CACHE_MEDIOS = 'public, max-age=86400';
 const PATRON_RANGO = /^bytes=(\d*)-(\d*)$/;
 
