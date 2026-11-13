@@ -1,2 +1,6 @@
 node_modules
 .atl
+
+# Material personal: se despliega en Railway, pero no se publica en el repositorio.
+img/
+*.mp3

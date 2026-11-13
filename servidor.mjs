@@ -1,5 +1,7 @@
 import { createServer } from 'node:http';
-import { readFile } from 'node:fs/promises';
+import { createReadStream } from 'node:fs';
+import { stat } from 'node:fs/promises';
+import { pipeline } from 'node:stream/promises';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
@@ -12,6 +14,10 @@ const PATRON_VISITA = /^[a-f0-9-]{36}$/;
 const NOMBRE_COOKIE = 'sesion_panel';
 const DURACION_SESION_MS = 7 * 24 * 60 * 60 * 1000;
 const TRAZO_CORAZON = 'M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z';
+
+const CANTIDAD_FOTOS = 6;
+const CACHE_MEDIOS = 'public, max-age=86400';
+const PATRON_RANGO = /^bytes=(\d*)-(\d*)$/;
 
 const ETIQUETAS_EVENTO = {
   abrir_pagina: 'Abrió el enlace',
@@ -26,7 +32,12 @@ const ARCHIVOS_PUBLICOS = {
   '/index.html': { nombre: 'index.html', tipo: 'text/html; charset=utf-8' },
   '/confeti.min.js': { nombre: 'confeti.min.js', tipo: 'text/javascript; charset=utf-8' },
   '/vista-previa.png': { nombre: 'vista-previa.png', tipo: 'image/png' },
+  '/cancion.mp3': { nombre: 'cancion.mp3', tipo: 'audio/mpeg', cache: CACHE_MEDIOS },
 };
+
+for (let numero = 1; numero <= CANTIDAD_FOTOS; numero += 1) {
+  ARCHIVOS_PUBLICOS[`/img/${numero}.png`] = { nombre: `img/${numero}.png`, tipo: 'image/png', cache: CACHE_MEDIOS };
+}
 
 const CABECERAS_PANEL = {
   'Content-Type': 'text/html; charset=utf-8',
@@ -131,10 +142,51 @@ function esDelMismoOrigen(peticion) {
 
 /* ---------- Tarjeta pública ---------- */
 
-async function servirArchivo(respuesta, archivo) {
+// Devuelve el tramo pedido en la cabecera Range, o null si la petición no la trae.
+function interpretarRango(cabecera, tamano) {
+  const partes = PATRON_RANGO.exec(cabecera ?? '');
+  if (!partes || (!partes[1] && !partes[2])) return null;
+
+  if (!partes[1]) return { inicio: Math.max(0, tamano - Number(partes[2])), fin: tamano - 1 };
+  const fin = partes[2] ? Math.min(Number(partes[2]), tamano - 1) : tamano - 1;
+  return { inicio: Number(partes[1]), fin };
+}
+
+async function enviarFlujo(flujo, respuesta) {
+  try {
+    await pipeline(flujo, respuesta);
+  } catch (error) {
+    // El navegador puede cortar la descarga a mitad de camino (por ejemplo, al saltar en el audio).
+    if (error.code !== 'ERR_STREAM_PREMATURE_CLOSE') throw error;
+  }
+}
+
+// Sirve archivos con soporte de rangos, que los celulares exigen para reproducir audio.
+async function servirArchivo(peticion, respuesta, archivo) {
   const ruta = fileURLToPath(new URL(archivo.nombre, import.meta.url));
-  const contenido = await readFile(ruta);
-  responder(respuesta, 200, contenido, { 'Content-Type': archivo.tipo, 'Cache-Control': 'no-cache' });
+  const { size: tamano } = await stat(ruta);
+  const cabeceras = {
+    'Content-Type': archivo.tipo,
+    'Cache-Control': archivo.cache ?? 'no-cache',
+    'Accept-Ranges': 'bytes',
+  };
+
+  const rango = interpretarRango(peticion.headers.range, tamano);
+  if (!rango) {
+    respuesta.writeHead(200, { ...cabeceras, 'Content-Length': tamano });
+    return enviarFlujo(createReadStream(ruta), respuesta);
+  }
+
+  if (rango.inicio > rango.fin || rango.inicio >= tamano) {
+    return responder(respuesta, 416, '', { 'Content-Range': `bytes */${tamano}` });
+  }
+
+  respuesta.writeHead(206, {
+    ...cabeceras,
+    'Content-Range': `bytes ${rango.inicio}-${rango.fin}/${tamano}`,
+    'Content-Length': rango.fin - rango.inicio + 1,
+  });
+  return enviarFlujo(createReadStream(ruta, { start: rango.inicio, end: rango.fin }), respuesta);
 }
 
 async function registrarEvento(peticion, respuesta) {
@@ -486,7 +538,7 @@ async function atender(peticion, respuesta) {
   const { pathname: ruta } = new URL(peticion.url, 'http://localhost');
 
   if (peticion.method === 'GET' && Object.hasOwn(ARCHIVOS_PUBLICOS, ruta)) {
-    return servirArchivo(respuesta, ARCHIVOS_PUBLICOS[ruta]);
+    return servirArchivo(peticion, respuesta, ARCHIVOS_PUBLICOS[ruta]);
   }
   if (peticion.method === 'POST' && ruta === '/api/eventos') return registrarEvento(peticion, respuesta);
   if (ruta === '/panel' || ruta.startsWith('/panel/')) return atenderPanel(peticion, respuesta, ruta);

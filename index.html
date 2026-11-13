@@ -411,8 +411,10 @@
       inset: 0;
       z-index: 4;
       display: grid;
-      place-items: center;
-      padding: 20px 16px;
+      justify-items: center;
+      align-items: start;
+      padding: 48px 16px 20px;
+      overflow-y: auto;
       background: rgba(53, 16, 95, 0.55);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
@@ -422,6 +424,7 @@
     .modal {
       position: relative;
       width: min(100%, 400px);
+      margin-block: auto;
       padding: 48px 24px 34px;
       text-align: center;
       background: var(--rosa-papel);
@@ -432,6 +435,61 @@
     }
 
     .modal:focus { outline: none; }
+
+    /* Las fotos van apiladas en un marco y se alternan con un fundido. */
+    .fotos {
+      position: relative;
+      width: min(62%, 220px);
+      aspect-ratio: 3 / 4;
+      margin: 0 auto 24px;
+      background: var(--lila);
+      border: 8px solid #fff;
+      border-radius: 10px;
+      box-shadow: 0 16px 30px -12px rgba(53, 16, 95, 0.6);
+      rotate: -2deg;
+      overflow: hidden;
+      animation: revelar 900ms var(--salida-suave) 250ms both;
+    }
+
+    .fotos img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 42%;
+      opacity: 0;
+      transform: scale(1.08);
+      transition: opacity 1100ms ease, transform 5s ease-out;
+    }
+
+    .fotos img.activa { opacity: 1; transform: scale(1); }
+
+    .boton-musica {
+      position: fixed;
+      top: max(14px, env(safe-area-inset-top));
+      right: max(14px, env(safe-area-inset-right));
+      z-index: 6;
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      color: var(--rojo-texto);
+      background: var(--rosa-papel);
+      border: 2px solid var(--lila-fuerte);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 8px 18px -8px rgba(91, 31, 166, 0.6);
+      animation: revelar 600ms var(--salida-suave) both;
+    }
+
+    .boton-musica:focus-visible { outline: 3px solid var(--morado); outline-offset: 3px; }
+    .boton-musica svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .boton-musica .onda { transition: opacity 200ms ease; }
+    .boton-musica .tachado { opacity: 0; transition: opacity 200ms ease; }
+    .boton-musica[aria-pressed="true"] .onda { opacity: 0; }
+    .boton-musica[aria-pressed="true"] .tachado { opacity: 1; }
 
     .respuesta {
       margin: 0;
@@ -642,6 +700,14 @@
       <div class="emblema" aria-hidden="true">
         <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>
       </div>
+      <div class="fotos" id="fotos" role="img" aria-label="Fotos de nosotros">
+        <img data-origen="img/1.png" alt="" decoding="async">
+        <img data-origen="img/2.png" alt="" decoding="async">
+        <img data-origen="img/3.png" alt="" decoding="async">
+        <img data-origen="img/4.png" alt="" decoding="async">
+        <img data-origen="img/5.png" alt="" decoding="async">
+        <img data-origen="img/6.png" alt="" decoding="async">
+      </div>
       <p class="respuesta" id="texto-respuesta">
         <span>Lo sabía, mi amor.</span>
         <span>Yo también quiero estar contigo hasta el fin de los tiempos.</span>
@@ -649,6 +715,15 @@
       </p>
     </div>
   </div>
+
+  <audio id="cancion" src="cancion.mp3" preload="none" loop></audio>
+  <button type="button" class="boton-musica" id="boton-musica" aria-pressed="false" aria-label="Silenciar la música" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/>
+      <path class="onda" d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11"/>
+      <path class="tachado" d="M16 9.5l5 5M21 9.5l-5 5"/>
+    </svg>
+  </button>
 
   <script src="confeti.min.js"></script>
   <script>
@@ -664,6 +739,10 @@
     const INTENTOS_ESCAPE = 40;
     const CRECIMIENTO_SI_POR_RECHAZO = 0.08;
     const ESCALA_MAXIMA_SI = 1.4;
+    const INTERVALO_FOTOS_MS = 3200;
+    const VOLUMEN_MUSICA = 0.7;
+    const DURACION_ENTRADA_MUSICA_MS = 3000;
+    const INTERVALO_VOLUMEN_MS = 100;
     const FRASES_NO = ['¿Segura?', 'Piénsalo', '¿De verdad?', 'Mi amor…', 'Casi…', 'Ese no'];
 
     const escenaCarta = document.getElementById('escena-carta');
@@ -677,6 +756,9 @@
     const botonNo = document.getElementById('boton-no');
     const velo = document.getElementById('velo');
     const modal = document.getElementById('modal');
+    const fotos = [...document.querySelectorAll('#fotos img')];
+    const cancion = document.getElementById('cancion');
+    const botonMusica = document.getElementById('boton-musica');
     const cielo = document.getElementById('cielo');
     const lienzoConfeti = document.getElementById('lienzo-confeti');
 
@@ -756,6 +838,50 @@
       }, INTERVALO_FESTEJO_MS);
     }
 
+    /* ---------- Música ---------- */
+
+    // Empieza en silencio y sube de a poco. Debe llamarse desde un toque del usuario.
+    async function iniciarMusica() {
+      try {
+        cancion.volume = 0;
+        await cancion.play();
+      } catch {
+        return; // Sin música la tarjeta sigue funcionando.
+      }
+
+      botonMusica.hidden = false;
+      const pasos = DURACION_ENTRADA_MUSICA_MS / INTERVALO_VOLUMEN_MS;
+      let paso = 0;
+      const subida = setInterval(() => {
+        paso += 1;
+        cancion.volume = Math.min(VOLUMEN_MUSICA, (VOLUMEN_MUSICA * paso) / pasos);
+        if (paso >= pasos) clearInterval(subida);
+      }, INTERVALO_VOLUMEN_MS);
+    }
+
+    function alternarMusica() {
+      cancion.muted = !cancion.muted;
+      botonMusica.setAttribute('aria-pressed', String(cancion.muted));
+      botonMusica.setAttribute('aria-label', cancion.muted ? 'Activar la música' : 'Silenciar la música');
+    }
+
+    /* ---------- Fotos ---------- */
+
+    // Las fotos se descargan recién al abrir el sobre, para no demorar la primera pantalla.
+    function precargarFotos() {
+      for (const foto of fotos) foto.src = foto.dataset.origen;
+    }
+
+    function iniciarPaseDeFotos() {
+      let indice = 0;
+      fotos[indice].classList.add('activa');
+      setInterval(() => {
+        fotos[indice].classList.remove('activa');
+        indice = (indice + 1) % fotos.length;
+        fotos[indice].classList.add('activa');
+      }, INTERVALO_FOTOS_MS);
+    }
+
     /* ---------- Escena 1: abrir la carta ---------- */
 
     async function abrirCarta() {
@@ -763,6 +889,8 @@
       sobre.classList.add('abierto');
       sobre.disabled = true;
       registrarEvento('abrir_carta');
+      iniciarMusica();
+      precargarFotos();
       if (lanzarCorazones) {
         lanzarCorazones({ particleCount: 24, spread: 70, startVelocity: 26, scalar: 1.2, origin: { x: 0.5, y: 0.5 } });
       }
@@ -839,12 +967,14 @@
       escenaPregunta.inert = true;
       velo.hidden = false;
       modal.focus();
+      iniciarPaseDeFotos();
       poblarCielo(CORAZONES_FESTEJO);
       festejar();
     }
 
     sobre.addEventListener('click', abrirCarta);
     botonContinuar.addEventListener('click', mostrarPregunta);
+    botonMusica.addEventListener('click', alternarMusica);
     botonSi.addEventListener('click', aceptar);
 
     // El "No" solo se escapa cuando le hacen clic (o lo tocan en el celular).
