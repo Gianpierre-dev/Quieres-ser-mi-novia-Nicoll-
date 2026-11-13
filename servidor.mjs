@@ -375,6 +375,7 @@ function plantilla({ titulo, claseCuerpo = '', contenido }) {
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#ffd3e4">
   <title>${escaparHtml(titulo)}</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23e0173f' d='${TRAZO_CORAZON}'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
