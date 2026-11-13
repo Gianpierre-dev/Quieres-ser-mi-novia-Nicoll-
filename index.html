@@ -347,6 +347,63 @@
       transition: transform 380ms var(--salida-suave);
     }
 
+    /* ---------- La carta escrita ---------- */
+
+    .carta {
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100dvh - 84px);
+      text-align: left;
+    }
+
+    .carta-texto {
+      overflow-y: auto;
+      padding: 0 6px 30px 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--lila-fuerte) transparent;
+      /* El borde inferior se desvanece para indicar que la carta continúa. */
+      -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 34px), transparent);
+      mask-image: linear-gradient(to bottom, #000 calc(100% - 34px), transparent);
+    }
+
+    /* Cada verso es una línea propia; si no entra, su continuación va con sangría. */
+    .verso {
+      display: block;
+      padding-left: 1em;
+      text-indent: -1em;
+    }
+
+    .carta-texto:focus-visible { outline: 3px solid var(--morado); outline-offset: 4px; border-radius: 8px; }
+
+    .carta-texto p {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.5;
+      color: var(--vino);
+      animation: revelar 900ms var(--salida-suave) both;
+      animation-delay: calc(500ms + var(--orden) * 650ms);
+    }
+
+    .carta-texto p + p { margin-top: 1.1em; }
+
+    .carta-texto .remate {
+      font-family: "Fraunces", Georgia, serif;
+      font-weight: 700;
+      font-size: 1.35rem;
+      line-height: 1.3;
+      color: var(--rojo-texto);
+      text-wrap: balance;
+    }
+
+    .boton-ancho {
+      flex: none;
+      width: 100%;
+      margin-top: 22px;
+      transform-origin: 50% 50%;
+      animation-delay: 3600ms;
+    }
+
     /* ---------- Escena 3: el modal ---------- */
 
     .velo {
@@ -526,6 +583,40 @@
       <p class="pista">Toca el sobre para abrirlo</p>
     </section>
 
+    <section class="contenedor-tarjeta" id="escena-poema" hidden>
+      <div class="tarjeta carta">
+        <div class="emblema" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>
+        </div>
+        <div class="carta-texto" id="carta-texto" tabindex="0" role="group" aria-label="Carta para Nicoll">
+          <p style="--orden: 0">
+            <span class="verso">Pienso tieso viendo cómo no equivocarme en ti;</span>
+            <span class="verso">que la arrogancia solo sirva para rechazar los dramas,</span>
+            <span class="verso">y que mi fragancia solo sirva para acercarte más con ansias.</span>
+            <span class="verso">Tengo algo claro al pensar: contigo sé que nada está mal.</span>
+          </p>
+          <p style="--orden: 1">
+            <span class="verso">Eres mi luz en mis días flojos;</span>
+            <span class="verso">cada vez que trato de rendirme te recuerdo,</span>
+            <span class="verso">y cuerdo pienso que te mereces lo mejor.</span>
+          </p>
+          <p style="--orden: 2">
+            <span class="verso">La paciencia de esperarte tuvo sus frutos:</span>
+            <span class="verso">hoy soy más feliz que nunca, aun con adversidades.</span>
+            <span class="verso">A veces son besos y versos que solo me salen a tu lado,</span>
+            <span class="verso">aunque me encuentre medio atontado.</span>
+          </p>
+          <p style="--orden: 3">
+            <span class="verso">Quiero compartir contigo el aire que respiramos.</span>
+            <span class="verso">Inconscientemente haces mucho por mí;</span>
+            <span class="verso">valoro tu esfuerzo, y más cuando veo en tus ojos ese brillo al sonreír.</span>
+          </p>
+          <p class="remate" style="--orden: 4">El amarre más bonito que me hiciste fue ver tu mirada.</p>
+        </div>
+        <button type="button" class="boton boton-si boton-ancho" id="boton-continuar">Tengo una pregunta para ti</button>
+      </div>
+    </section>
+
     <section class="contenedor-tarjeta" id="escena-pregunta" hidden>
       <div class="tarjeta">
         <div class="emblema" aria-hidden="true">
@@ -577,6 +668,9 @@
 
     const escenaCarta = document.getElementById('escena-carta');
     const sobre = document.getElementById('sobre');
+    const escenaPoema = document.getElementById('escena-poema');
+    const cartaTexto = document.getElementById('carta-texto');
+    const botonContinuar = document.getElementById('boton-continuar');
     const escenaPregunta = document.getElementById('escena-pregunta');
     const titulo = document.getElementById('titulo');
     const botonSi = document.getElementById('boton-si');
@@ -678,6 +772,13 @@
       await esperar(DURACION_SALIDA_MS);
 
       escenaCarta.hidden = true;
+      escenaPoema.hidden = false;
+      cartaTexto.focus({ preventScroll: true });
+    }
+
+    function mostrarPregunta() {
+      registrarEvento('ver_pregunta');
+      escenaPoema.hidden = true;
       escenaPregunta.hidden = false;
       titulo.focus();
     }
@@ -743,6 +844,7 @@
     }
 
     sobre.addEventListener('click', abrirCarta);
+    botonContinuar.addEventListener('click', mostrarPregunta);
     botonSi.addEventListener('click', aceptar);
 
     // El "No" solo se escapa cuando le hacen clic (o lo tocan en el celular).

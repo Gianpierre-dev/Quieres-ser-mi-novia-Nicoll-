@@ -16,6 +16,7 @@ const TRAZO_CORAZON = 'M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 
 const ETIQUETAS_EVENTO = {
   abrir_pagina: 'Abrió el enlace',
   abrir_carta: 'Abrió la carta',
+  ver_pregunta: 'Llegó a la pregunta',
   clic_no: 'Tocó «No»',
   clic_si: 'Tocó «Sí»',
 };
