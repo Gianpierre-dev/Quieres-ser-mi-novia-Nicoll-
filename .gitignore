@@ -4,5 +4,7 @@ node_modules
 # Material personal: se despliega en Railway, pero no se publica en el repositorio.
 img/
 img-video/
+img-video-2/
+xd.png
 *.mp3
 *.mp4
