@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#ffd3e4">
   <title>Para Nicoll</title>
-  <meta name="description" content="Una pregunta para Nicoll.">
+  <meta name="description" content="Una carta para Nicoll.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
@@ -14,11 +14,13 @@
       --rosa-pastel: #ffd3e4;
       --rosa-papel: #fff0f6;
       --lila: #dcc7ff;
+      --lila-medio: #cbadfa;
       --lila-fuerte: #b993f5;
       --morado: #5b1fa6;
       --morado-oscuro: #35105f;
       --rojo: #e0173f;
       --rojo-oscuro: #b50d30;
+      --rojo-texto: #c40f37;
       --salida-suave: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
@@ -47,6 +49,8 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    [hidden] { display: none !important; }
+
     /* ---------- Fondo ---------- */
 
     .fondo, .cielo, #lienzo-confeti {
@@ -71,7 +75,7 @@
     .mancha-morada { background: #a56bf0; bottom: -35vmax; right: -25vmax; animation-duration: 22s; animation-delay: -6s; }
     .mancha-roja { background: #ff6f8f; width: 40vmax; height: 40vmax; top: 35%; left: 45%; opacity: 0.3; animation-duration: 26s; animation-delay: -11s; }
 
-    .cielo { overflow: hidden; }
+    .cielo { overflow: hidden; z-index: 1; }
 
     .corazon-flotante {
       position: absolute;
@@ -82,11 +86,127 @@
 
     .corazon-flotante svg { display: block; width: 100%; height: 100%; animation: balanceo 3s ease-in-out infinite alternate; }
 
-    #lienzo-confeti { width: 100%; height: 100%; z-index: 3; }
+    #lienzo-confeti { width: 100%; height: 100%; z-index: 5; }
 
-    /* ---------- Tarjeta ---------- */
+    /* ---------- Escena 1: la carta sorpresa ---------- */
 
-    .flotador {
+    .escena-carta {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      justify-items: center;
+      gap: 28px;
+      text-align: center;
+      animation: entrar 900ms var(--salida-suave) both;
+    }
+
+    .escena-carta.saliendo { animation: salir 450ms ease-in both; }
+
+    .destinataria {
+      margin: 0;
+      font-family: "Bodoni Moda", "Didot", Georgia, serif;
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(2rem, 9vw, 2.75rem);
+      line-height: 1.1;
+      color: var(--morado);
+    }
+
+    .sobre {
+      position: relative;
+      width: min(78vw, 320px);
+      aspect-ratio: 3 / 2;
+      padding: 0;
+      border: 0;
+      background: none;
+      cursor: pointer;
+      perspective: 900px;
+      touch-action: manipulation;
+      filter: drop-shadow(0 22px 26px rgba(91, 31, 166, 0.4));
+      animation: meneo 2.8s ease-in-out 1.2s infinite;
+    }
+
+    .sobre:focus-visible { outline: 3px solid var(--morado); outline-offset: 10px; border-radius: 12px; }
+
+    .sobre.abierto { animation: none; cursor: default; }
+
+    .sobre span { position: absolute; display: block; }
+
+    .sobre-fondo {
+      inset: 0;
+      z-index: 1;
+      background: var(--lila-fuerte);
+      border-radius: 10px;
+    }
+
+    .sobre-hoja {
+      left: 7%;
+      right: 7%;
+      top: 8%;
+      height: 84%;
+      z-index: 2;
+      display: grid !important;
+      place-items: center;
+      background: var(--rosa-papel);
+      border-radius: 6px;
+      transition: transform 900ms var(--salida-suave) 450ms;
+    }
+
+    .sobre-hoja svg { width: 26%; fill: var(--rojo); opacity: 0.9; }
+
+    .sobre-frente {
+      inset: 0;
+      z-index: 3;
+      background: var(--lila);
+      border-radius: 10px;
+      clip-path: polygon(0 0, 50% 56%, 100% 0, 100% 100%, 0 100%);
+    }
+
+    .sobre-solapa {
+      inset: 0;
+      z-index: 4;
+      background: var(--lila-medio);
+      border-radius: 10px;
+      clip-path: polygon(0 0, 100% 0, 50% 60%);
+      transform-origin: 50% 0;
+      transition: transform 700ms var(--salida-suave), z-index 0s linear 280ms;
+    }
+
+    .sobre-sello {
+      left: 50%;
+      top: 58%;
+      z-index: 5;
+      width: 22%;
+      aspect-ratio: 1;
+      display: grid !important;
+      place-items: center;
+      background: var(--rojo);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 6px 12px -4px rgba(181, 13, 48, 0.7);
+      animation: latido-sello 1.2s ease-in-out infinite;
+      transition: opacity 300ms ease;
+    }
+
+    .sobre-sello svg { width: 54%; fill: #fff; }
+
+    .sobre.abierto .sobre-solapa { transform: rotateX(180deg); z-index: 1; }
+    .sobre.abierto .sobre-hoja { transform: translateY(-62%); }
+    .sobre.abierto .sobre-sello { opacity: 0; animation: none; }
+
+    .pista {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--morado);
+      animation: respirar 2s ease-in-out infinite;
+    }
+
+    .sobre.abierto ~ .pista { visibility: hidden; }
+
+    /* ---------- Escena 2: la pregunta ---------- */
+
+    .contenedor-tarjeta {
       position: relative;
       z-index: 2;
       width: min(100%, 400px);
@@ -94,7 +214,7 @@
 
     .tarjeta {
       position: relative;
-      padding: 44px 22px 26px;
+      padding: 44px 22px 34px;
       text-align: center;
       background: var(--rosa-papel);
       border: 2px solid var(--lila);
@@ -105,8 +225,6 @@
         0 40px 80px -30px rgba(224, 23, 63, 0.35);
       animation: entrar 900ms var(--salida-suave) both;
     }
-
-    .tarjeta.celebrando { animation: festejo 700ms var(--salida-suave) both; }
 
     .emblema {
       position: absolute;
@@ -142,6 +260,8 @@
       text-wrap: balance;
     }
 
+    .titulo:focus { outline: none; }
+
     .palabra {
       display: inline-block;
       animation: revelar 800ms var(--salida-suave) both;
@@ -154,10 +274,10 @@
       font-style: normal;
       font-weight: 700;
       font-size: 1.28em;
-      color: var(--rojo);
+      color: var(--rojo-texto);
       animation:
         revelar 900ms var(--salida-suave) both,
-        respirar 2.6s ease-in-out 1.9s infinite;
+        respirar 2.6s ease-in-out infinite;
       animation-delay: 1000ms, 1900ms;
     }
 
@@ -165,7 +285,6 @@
       display: flex;
       gap: 12px;
       margin-top: 30px;
-      animation: revelar 800ms var(--salida-suave) 1300ms both;
     }
 
     .boton {
@@ -180,7 +299,7 @@
       border: 2px solid transparent;
       cursor: pointer;
       touch-action: manipulation;
-      transition: background-color 200ms ease, box-shadow 200ms ease, transform 200ms var(--salida-suave);
+      animation: revelar 800ms var(--salida-suave) 1300ms backwards;
     }
 
     .boton:focus-visible {
@@ -192,6 +311,7 @@
       background: var(--rojo);
       color: #fff;
       box-shadow: 0 10px 22px -8px rgba(224, 23, 63, 0.75);
+      transition: background-color 200ms ease, transform 200ms var(--salida-suave);
     }
 
     .boton-si::after {
@@ -207,30 +327,46 @@
     .boton-si:hover { background: var(--rojo-oscuro); transform: translateY(-2px); }
     .boton-si:active { transform: scale(0.96); }
 
-    /* El botón "No" no tiene ninguna animación de movimiento: se queda en su lugar. */
+    /* El botón "No" se escapa: su posición la mueve el script con transform. */
     .boton-no {
-      background: transparent;
+      z-index: 3;
+      background: var(--rosa-papel);
       color: var(--morado);
       border-color: var(--lila-fuerte);
+      transition: transform 380ms var(--salida-suave);
     }
 
-    .boton-no:hover { background: rgba(185, 147, 245, 0.2); }
+    /* ---------- Escena 3: el modal ---------- */
 
-    .aviso {
-      min-height: 1.5em;
-      margin: 16px 0 0;
-      font-size: 0.9375rem;
-      font-weight: 600;
-      color: var(--morado);
+    .velo {
+      position: fixed;
+      inset: 0;
+      z-index: 4;
+      display: grid;
+      place-items: center;
+      padding: 20px 16px;
+      background: rgba(53, 16, 95, 0.55);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      animation: aparecer-velo 400ms ease both;
     }
 
-    .aviso.visible { animation: revelar 500ms var(--salida-suave) both; }
+    .modal {
+      position: relative;
+      width: min(100%, 400px);
+      padding: 48px 24px 34px;
+      text-align: center;
+      background: var(--rosa-papel);
+      border: 2px solid var(--lila);
+      border-radius: 28px;
+      box-shadow: 0 30px 70px -20px rgba(53, 16, 95, 0.8);
+      animation: brotar 700ms var(--salida-suave) both;
+    }
 
-    /* ---------- Respuesta ---------- */
+    .modal:focus { outline: none; }
 
     .respuesta {
       margin: 0;
-      padding: 6px 0 12px;
       font-family: "Bodoni Moda", "Didot", Georgia, serif;
       font-weight: 500;
       font-size: clamp(1.4rem, 6.4vw, 1.75rem);
@@ -239,33 +375,31 @@
       text-wrap: balance;
     }
 
-    .respuesta:focus { outline: none; }
-
     .respuesta span {
       display: block;
       animation: revelar 900ms var(--salida-suave) both;
     }
 
     .respuesta span + span { margin-top: 0.65em; }
-    .respuesta span:nth-child(1) { animation-delay: 250ms; }
-    .respuesta span:nth-child(2) { animation-delay: 1300ms; }
-    .respuesta span:nth-child(3) { animation-delay: 2700ms; }
+    .respuesta span:nth-child(1) { animation-delay: 450ms; }
+    .respuesta span:nth-child(2) { animation-delay: 1500ms; }
+    .respuesta span:nth-child(3) { animation-delay: 2900ms; }
 
     .respuesta .cierre {
       font-style: italic;
       font-size: 1.12em;
-      color: var(--rojo);
+      color: var(--rojo-texto);
     }
-
-    [hidden] { display: none !important; }
 
     /* ---------- Pantallas más grandes ---------- */
 
     @media (min-width: 640px) {
-      .flotador { width: min(100%, 500px); }
-      .tarjeta { padding: 60px 48px 36px; border-radius: 32px; }
+      .contenedor-tarjeta { width: min(100%, 500px); }
+      .tarjeta { padding: 60px 48px 44px; border-radius: 32px; }
       .titulo { font-size: 3.25rem; }
       .acciones { gap: 16px; margin-top: 40px; }
+      .sobre { width: 380px; }
+      .modal { width: min(100%, 500px); padding: 60px 48px 44px; }
       .respuesta { font-size: 2rem; }
     }
 
@@ -293,15 +427,33 @@
       to { transform: rotate(18deg); }
     }
 
+    @keyframes meneo {
+      0%, 60%, 100% { transform: rotate(0) translateY(0); }
+      10% { transform: rotate(-3deg) translateY(-6px); }
+      20% { transform: rotate(3deg) translateY(-6px); }
+      30% { transform: rotate(-2deg) translateY(-3px); }
+      40% { transform: rotate(2deg) translateY(0); }
+    }
+
     @keyframes entrar {
       from { opacity: 0; transform: scale(0.82) translateY(30px); filter: blur(10px); }
       to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
     }
 
-    @keyframes festejo {
-      0% { transform: scale(0.9) rotate(-2deg); }
-      55% { transform: scale(1.05) rotate(1deg); }
-      100% { transform: scale(1) rotate(0); }
+    @keyframes salir {
+      from { opacity: 1; transform: scale(1); }
+      to { opacity: 0; transform: scale(1.15); }
+    }
+
+    @keyframes brotar {
+      0% { opacity: 0; transform: scale(0.6) rotate(-4deg); }
+      60% { opacity: 1; transform: scale(1.05) rotate(1deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0); }
+    }
+
+    @keyframes aparecer-velo {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     @keyframes revelar {
@@ -315,6 +467,14 @@
       30% { transform: scale(1); }
       45% { transform: scale(1.18); }
       60% { transform: scale(1); }
+    }
+
+    @keyframes latido-sello {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      15% { transform: translate(-50%, -50%) scale(1.18); }
+      30% { transform: translate(-50%, -50%) scale(1); }
+      45% { transform: translate(-50%, -50%) scale(1.1); }
+      60% { transform: translate(-50%, -50%) scale(1); }
     }
 
     @keyframes respirar {
@@ -345,14 +505,29 @@
   <div class="cielo" id="cielo" aria-hidden="true"></div>
   <canvas id="lienzo-confeti" aria-hidden="true"></canvas>
 
-  <div class="flotador">
-    <main class="tarjeta" id="tarjeta">
-      <div class="emblema" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>
-      </div>
+  <main>
+    <section class="escena-carta" id="escena-carta">
+      <p class="destinataria">Para Nicoll</p>
+      <button type="button" class="sobre" id="sobre" aria-label="Abrir la carta">
+        <span class="sobre-fondo"></span>
+        <span class="sobre-hoja">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>
+        </span>
+        <span class="sobre-frente"></span>
+        <span class="sobre-solapa"></span>
+        <span class="sobre-sello">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>
+        </span>
+      </button>
+      <p class="pista">Toca el sobre para abrirlo</p>
+    </section>
 
-      <section id="pregunta">
-        <h1 class="titulo">
+    <section class="contenedor-tarjeta" id="escena-pregunta" hidden>
+      <div class="tarjeta">
+        <div class="emblema" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>
+        </div>
+        <h1 class="titulo" id="titulo" tabindex="-1">
           <span class="palabra" style="--orden: 0">¿Quieres</span>
           <span class="palabra" style="--orden: 1">ser</span>
           <span class="palabra" style="--orden: 2">mi</span>
@@ -363,17 +538,21 @@
           <button type="button" class="boton boton-si" id="boton-si">Sí</button>
           <button type="button" class="boton boton-no" id="boton-no">No</button>
         </div>
-        <p class="aviso" id="aviso" role="status" aria-live="polite"></p>
-      </section>
+      </div>
+    </section>
+  </main>
 
-      <section id="respuesta" hidden>
-        <p class="respuesta" id="texto-respuesta" tabindex="-1">
-          <span>Lo sabía mi amor.</span>
-          <span>Yo también quiero estar contigo hasta el fin de los tiempos.</span>
-          <span class="cierre">Te amo como no tienes idea.</span>
-        </p>
-      </section>
-    </main>
+  <div class="velo" id="velo" hidden>
+    <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="texto-respuesta" tabindex="-1">
+      <div class="emblema" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>
+      </div>
+      <p class="respuesta" id="texto-respuesta">
+        <span>Lo sabía mi amor.</span>
+        <span>Yo también quiero estar contigo hasta el fin de los tiempos.</span>
+        <span class="cierre">Te amo como no tienes idea.</span>
+      </p>
+    </div>
   </div>
 
   <script src="confeti.min.js"></script>
@@ -383,21 +562,29 @@
     const CORAZONES_INICIALES = 14;
     const CORAZONES_FESTEJO = 22;
     const INTERVALO_FESTEJO_MS = 2600;
-    const MENSAJE_NO = 'Piénsalo otra vez, mi amor.';
+    const DURACION_APERTURA_MS = 1700;
+    const DURACION_SALIDA_MS = 450;
+    const MARGEN_PANTALLA = 12;
+    const DISTANCIA_MINIMA_ESCAPE = 130;
+    const INTENTOS_ESCAPE = 40;
 
-    const tarjeta = document.getElementById('tarjeta');
-    const seccionPregunta = document.getElementById('pregunta');
-    const seccionRespuesta = document.getElementById('respuesta');
-    const textoRespuesta = document.getElementById('texto-respuesta');
+    const escenaCarta = document.getElementById('escena-carta');
+    const sobre = document.getElementById('sobre');
+    const escenaPregunta = document.getElementById('escena-pregunta');
+    const titulo = document.getElementById('titulo');
     const botonSi = document.getElementById('boton-si');
     const botonNo = document.getElementById('boton-no');
-    const aviso = document.getElementById('aviso');
+    const velo = document.getElementById('velo');
+    const modal = document.getElementById('modal');
     const cielo = document.getElementById('cielo');
     const lienzoConfeti = document.getElementById('lienzo-confeti');
 
     const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const aleatorio = (minimo, maximo) => minimo + Math.random() * (maximo - minimo);
     const elegir = (lista) => lista[Math.floor(Math.random() * lista.length)];
+    const esperar = (milisegundos) => new Promise((resolver) => setTimeout(resolver, sinMovimiento ? 0 : milisegundos));
+
+    /* ---------- Corazones de fondo ---------- */
 
     function crearCorazonFlotante() {
       const corazon = document.createElement('span');
@@ -419,6 +606,8 @@
       for (let indice = 0; indice < cantidad; indice += 1) crearCorazonFlotante();
     }
 
+    /* ---------- Confeti de corazones ---------- */
+
     function crearLanzador() {
       if (sinMovimiento || typeof confetti !== 'function') return null;
       const lanzar = confetti.create(lienzoConfeti, { resize: true, useWorker: true });
@@ -426,23 +615,24 @@
       return (opciones) => lanzar({
         shapes: [formaCorazon],
         colors: COLORES,
-        scalar: 1.6,
+        scalar: 1.7,
         ticks: 260,
         ...opciones,
       });
     }
 
-    function festejar() {
-      const lanzar = crearLanzador();
-      if (!lanzar) return;
+    const lanzarCorazones = crearLanzador();
 
-      lanzar({ particleCount: 90, spread: 100, startVelocity: 42, origin: { x: 0.5, y: 0.6 } });
-      setTimeout(() => lanzar({ particleCount: 50, angle: 60, spread: 70, origin: { x: 0, y: 0.75 } }), 250);
-      setTimeout(() => lanzar({ particleCount: 50, angle: 120, spread: 70, origin: { x: 1, y: 0.75 } }), 450);
+    function festejar() {
+      if (!lanzarCorazones) return;
+
+      lanzarCorazones({ particleCount: 110, spread: 110, startVelocity: 45, origin: { x: 0.5, y: 0.6 } });
+      setTimeout(() => lanzarCorazones({ particleCount: 60, angle: 60, spread: 70, origin: { x: 0, y: 0.75 } }), 250);
+      setTimeout(() => lanzarCorazones({ particleCount: 60, angle: 120, spread: 70, origin: { x: 1, y: 0.75 } }), 450);
 
       setInterval(() => {
-        lanzar({
-          particleCount: 26,
+        lanzarCorazones({
+          particleCount: 28,
           spread: 80,
           startVelocity: 30,
           origin: { x: aleatorio(0.15, 0.85), y: aleatorio(0.3, 0.7) },
@@ -450,22 +640,87 @@
       }, INTERVALO_FESTEJO_MS);
     }
 
+    /* ---------- Escena 1: abrir la carta ---------- */
+
+    async function abrirCarta() {
+      if (sobre.classList.contains('abierto')) return;
+      sobre.classList.add('abierto');
+      sobre.disabled = true;
+      if (lanzarCorazones) {
+        lanzarCorazones({ particleCount: 24, spread: 70, startVelocity: 26, scalar: 1.2, origin: { x: 0.5, y: 0.5 } });
+      }
+
+      await esperar(DURACION_APERTURA_MS);
+      escenaCarta.classList.add('saliendo');
+      await esperar(DURACION_SALIDA_MS);
+
+      escenaCarta.hidden = true;
+      escenaPregunta.hidden = false;
+      titulo.focus();
+    }
+
+    /* ---------- Escena 2: el "No" se escapa ---------- */
+
+    let posicionBase = null;
+
+    function seSuperponen(izquierda, arriba, ancho, alto, rectangulo, holgura) {
+      return izquierda < rectangulo.right + holgura
+        && izquierda + ancho > rectangulo.left - holgura
+        && arriba < rectangulo.bottom + holgura
+        && arriba + alto > rectangulo.top - holgura;
+    }
+
+    function escaparBotonNo() {
+      const actual = botonNo.getBoundingClientRect();
+      if (!posicionBase) posicionBase = { izquierda: actual.left, arriba: actual.top };
+
+      const rectanguloSi = botonSi.getBoundingClientRect();
+      const maximoX = Math.max(MARGEN_PANTALLA, window.innerWidth - actual.width - MARGEN_PANTALLA);
+      const maximoY = Math.max(MARGEN_PANTALLA, window.innerHeight - actual.height - MARGEN_PANTALLA);
+
+      let destinoX = MARGEN_PANTALLA;
+      let destinoY = MARGEN_PANTALLA;
+      for (let intento = 0; intento < INTENTOS_ESCAPE; intento += 1) {
+        destinoX = aleatorio(MARGEN_PANTALLA, maximoX);
+        destinoY = aleatorio(MARGEN_PANTALLA, maximoY);
+        const lejos = Math.hypot(destinoX - actual.left, destinoY - actual.top) > DISTANCIA_MINIMA_ESCAPE;
+        const pisaElSi = seSuperponen(destinoX, destinoY, actual.width, actual.height, rectanguloSi, 16);
+        if (lejos && !pisaElSi) break;
+      }
+
+      const desplazamientoX = destinoX - posicionBase.izquierda;
+      const desplazamientoY = destinoY - posicionBase.arriba;
+      botonNo.style.transform = `translate(${desplazamientoX}px, ${desplazamientoY}px)`;
+    }
+
+    function reiniciarBotonNo() {
+      posicionBase = null;
+      botonNo.style.transform = '';
+    }
+
+    /* ---------- Escena 3: el modal ---------- */
+
     function aceptar() {
-      seccionPregunta.hidden = true;
-      seccionRespuesta.hidden = false;
-      tarjeta.classList.add('celebrando');
-      textoRespuesta.focus();
+      escenaPregunta.inert = true;
+      velo.hidden = false;
+      modal.focus();
       poblarCielo(CORAZONES_FESTEJO);
       festejar();
     }
 
-    function rechazar() {
-      aviso.textContent = MENSAJE_NO;
-      aviso.classList.add('visible');
-    }
-
+    sobre.addEventListener('click', abrirCarta);
     botonSi.addEventListener('click', aceptar);
-    botonNo.addEventListener('click', rechazar);
+
+    // Escritorio: se escapa al pasar el cursor. Celular y teclado: se escapa al tocarlo.
+    botonNo.addEventListener('pointerenter', (evento) => {
+      if (evento.pointerType === 'mouse') escaparBotonNo();
+    });
+    botonNo.addEventListener('click', (evento) => {
+      evento.preventDefault();
+      escaparBotonNo();
+    });
+    window.addEventListener('resize', reiniciarBotonNo);
+
     poblarCielo(CORAZONES_INICIALES);
   </script>
 </body>
