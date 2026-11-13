@@ -509,7 +509,9 @@
     }
 
     .momento:nth-child(even) .marco { rotate: 2deg; }
-    .marco-ancho { width: min(92%, 300px); aspect-ratio: 3 / 2; }
+    /* Diapositivas completas del video: el marco respeta su proporción para no recortarlas. */
+    .marco-alto { box-sizing: content-box; width: min(60%, 220px); aspect-ratio: 9 / 16; }
+    .marco-alto img { object-position: 50% 50%; transform: none; }
     .marco-grande { width: min(90%, 290px); }
 
     .momento-texto {
@@ -774,10 +776,12 @@
           </article>
           <article class="momento" hidden>
             <h2 class="momento-titulo" tabindex="-1">2020</h2>
-            <div class="marco marco-ancho" role="img" aria-label="Una de nuestras videollamadas">
-              <img data-origen="img/historia/videollamada.jpg" alt="" decoding="async">
+            <div class="marco marco-alto" role="img" aria-label="Nuestras videollamadas del 2020: cuando hacíamos videollamadas, las disfrutaba mucho">
+              <img data-origen="img/historia/videollamada-1.jpg" alt="" decoding="async">
+              <img data-origen="img/historia/videollamada-2.jpg" alt="" decoding="async">
+              <img data-origen="img/historia/videollamada-3.jpg" alt="" decoding="async">
             </div>
-            <p class="momento-texto">Cuando hacíamos videollamadas. Las disfrutaba mucho.</p>
+            <p class="momento-texto">Lindos tiempos del 2020.</p>
           </article>
           <article class="momento" hidden>
             <h2 class="momento-titulo" tabindex="-1">Nosotros</h2>
