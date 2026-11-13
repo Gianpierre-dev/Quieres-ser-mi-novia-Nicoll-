@@ -216,7 +216,7 @@
     .contenedor-tarjeta {
       position: relative;
       z-index: 2;
-      width: min(100%, 400px);
+      width: min(100vw - 32px, 400px);
     }
 
     .tarjeta {
@@ -451,7 +451,8 @@
       animation: revelar 900ms var(--salida-suave) 250ms both;
     }
 
-    .fotos img {
+    .fotos img,
+    .marco img {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -463,7 +464,90 @@
       transition: opacity 1100ms ease, transform 5s ease-out;
     }
 
-    .fotos img.activa { opacity: 1; transform: scale(1); }
+    .fotos img.activa,
+    .marco img.activa { opacity: 1; transform: scale(1); }
+
+    /* ---------- Nuestra historia ---------- */
+
+    .historia {
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100dvh - 84px);
+    }
+
+    .momentos {
+      overflow-y: auto;
+      padding: 4px 6px 8px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--lila-fuerte) transparent;
+    }
+
+    .momento { animation: revelar 700ms var(--salida-suave) both; }
+
+    .momento-titulo {
+      margin: 0 0 18px;
+      font-family: "Fraunces", Georgia, serif;
+      font-weight: 700;
+      font-size: clamp(2rem, 9vw, 2.6rem);
+      line-height: 1.1;
+      color: var(--rojo-texto);
+    }
+
+    .momento-titulo:focus { outline: none; }
+
+    .marco {
+      position: relative;
+      width: min(64%, 220px);
+      aspect-ratio: 4 / 5;
+      margin: 0 auto;
+      background: var(--lila);
+      border: 8px solid #fff;
+      border-radius: 10px;
+      box-shadow: 0 16px 30px -12px rgba(53, 16, 95, 0.6);
+      rotate: -2deg;
+      overflow: hidden;
+    }
+
+    .momento:nth-child(even) .marco { rotate: 2deg; }
+    .marco-ancho { width: min(92%, 300px); aspect-ratio: 3 / 2; }
+    .marco-grande { width: min(90%, 290px); }
+
+    .momento-texto {
+      margin: 22px 0 0;
+      font-size: 1.0625rem;
+      font-weight: 600;
+      line-height: 1.5;
+      color: var(--vino);
+      text-wrap: pretty;
+    }
+
+    .momento-texto strong {
+      display: block;
+      margin-top: 0.5em;
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 1.3rem;
+      line-height: 1.25;
+      color: var(--rojo-texto);
+    }
+
+    .progreso {
+      display: flex;
+      justify-content: center;
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .progreso span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--lila-fuerte);
+      transition: background-color 300ms ease, transform 300ms var(--salida-suave);
+    }
+
+    .progreso span.actual { background: var(--rojo); transform: scale(1.4); }
+
+    .boton-pronto { margin-top: 18px; animation-delay: 500ms; }
 
     .boton-musica {
       position: fixed;
@@ -520,7 +604,7 @@
     /* ---------- Pantallas más grandes ---------- */
 
     @media (min-width: 640px) {
-      .contenedor-tarjeta { width: min(100%, 500px); }
+      .contenedor-tarjeta { width: min(100vw - 32px, 500px); }
       .tarjeta { padding: 60px 48px 44px; border-radius: 32px; }
       .titulo { font-size: 3.25rem; }
       .acciones { gap: 16px; margin-top: 40px; }
@@ -671,7 +755,54 @@
           </p>
           <p class="remate" style="--orden: 4">El amarre más bonito que me hiciste fue ver tu mirada.</p>
         </div>
-        <button type="button" class="boton boton-si boton-ancho" id="boton-continuar">Tengo una pregunta para ti</button>
+        <button type="button" class="boton boton-si boton-ancho" id="boton-continuar">Nuestra historia</button>
+      </div>
+    </section>
+
+    <section class="contenedor-tarjeta" id="escena-historia" hidden>
+      <div class="tarjeta historia">
+        <div class="emblema" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>
+        </div>
+        <div class="momentos">
+          <article class="momento" hidden>
+            <h2 class="momento-titulo" tabindex="-1">2019</h2>
+            <div class="marco marco-grande" role="img" aria-label="Notificaciones de tus menciones y reacciones">
+              <img data-origen="img/historia/menciones.jpg" alt="" decoding="async" style="object-position: 0% 0%">
+            </div>
+            <p class="momento-texto">El increíble acoso del 2019.</p>
+          </article>
+          <article class="momento" hidden>
+            <h2 class="momento-titulo" tabindex="-1">2020</h2>
+            <div class="marco marco-ancho" role="img" aria-label="Una de nuestras videollamadas">
+              <img data-origen="img/historia/videollamada.jpg" alt="" decoding="async">
+            </div>
+            <p class="momento-texto">Cuando hacíamos videollamadas. Las disfrutaba mucho.</p>
+          </article>
+          <article class="momento" hidden>
+            <h2 class="momento-titulo" tabindex="-1">Nosotros</h2>
+            <div class="marco" role="img" aria-label="Fotos de nosotros dos">
+              <img data-origen="img/historia/juntos-1.jpg" alt="" decoding="async" style="object-position: 62% 50%">
+              <img data-origen="img/historia/juntos-2.jpg" alt="" decoding="async" style="object-position: 50% 12%">
+              <img data-origen="img/historia/juntos-3.jpg" alt="" decoding="async" style="object-position: 50% 40%">
+            </div>
+            <p class="momento-texto">Gracias por estar cuando mi cielo estaba gris. Me hiciste ver una parte de mí que no conocía.</p>
+          </article>
+          <article class="momento" hidden>
+            <h2 class="momento-titulo" tabindex="-1">Tú</h2>
+            <div class="marco" role="img" aria-label="Fotos tuyas">
+              <img data-origen="img/historia/ella-1.jpg" alt="" decoding="async" style="object-position: 50% 40%">
+              <img data-origen="img/historia/ella-2.jpg" alt="" decoding="async" style="object-position: 50% 28%">
+            </div>
+            <p class="momento-texto">
+              Por tu locura, por tu resiliencia, por tu fortaleza, por esas pequeñas cosas que haces… te admiro.
+              Y por todas esas cosas que haces, me recuerdan el porqué te quiero en mi vida.
+              <strong>Gracias por existir.</strong>
+            </p>
+          </article>
+        </div>
+        <div class="progreso" id="progreso" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        <button type="button" class="boton boton-si boton-ancho boton-pronto" id="boton-siguiente">Siguiente</button>
       </div>
     </section>
 
@@ -740,6 +871,7 @@
     const CRECIMIENTO_SI_POR_RECHAZO = 0.08;
     const ESCALA_MAXIMA_SI = 1.4;
     const INTERVALO_FOTOS_MS = 3200;
+    const INTERVALO_FOTOS_HISTORIA_MS = 2400;
     const VOLUMEN_MUSICA = 0.7;
     const DURACION_ENTRADA_MUSICA_MS = 3000;
     const INTERVALO_VOLUMEN_MS = 100;
@@ -750,6 +882,10 @@
     const escenaPoema = document.getElementById('escena-poema');
     const cartaTexto = document.getElementById('carta-texto');
     const botonContinuar = document.getElementById('boton-continuar');
+    const escenaHistoria = document.getElementById('escena-historia');
+    const momentos = [...document.querySelectorAll('.momento')];
+    const puntosProgreso = [...document.querySelectorAll('#progreso span')];
+    const botonSiguiente = document.getElementById('boton-siguiente');
     const escenaPregunta = document.getElementById('escena-pregunta');
     const titulo = document.getElementById('titulo');
     const botonSi = document.getElementById('boton-si');
@@ -869,7 +1005,7 @@
 
     // Las fotos se descargan recién al abrir el sobre, para no demorar la primera pantalla.
     function precargarFotos() {
-      for (const foto of fotos) foto.src = foto.dataset.origen;
+      for (const foto of document.querySelectorAll('img[data-origen]')) foto.src = foto.dataset.origen;
     }
 
     function iniciarPaseDeFotos() {
@@ -904,8 +1040,49 @@
       cartaTexto.focus({ preventScroll: true });
     }
 
+    /* ---------- Nuestra historia ---------- */
+
+    let momentoActual = -1;
+    let paseDelMomento = null;
+
+    function mostrarMomento(indice) {
+      clearInterval(paseDelMomento);
+      momentos.forEach((momento, posicion) => { momento.hidden = posicion !== indice; });
+      puntosProgreso.forEach((punto, posicion) => punto.classList.toggle('actual', posicion === indice));
+
+      const imagenes = [...momentos[indice].querySelectorAll('img')];
+      imagenes.forEach((imagen, posicion) => imagen.classList.toggle('activa', posicion === 0));
+      if (imagenes.length > 1) {
+        let visible = 0;
+        paseDelMomento = setInterval(() => {
+          imagenes[visible].classList.remove('activa');
+          visible = (visible + 1) % imagenes.length;
+          imagenes[visible].classList.add('activa');
+        }, INTERVALO_FOTOS_HISTORIA_MS);
+      }
+
+      const esElUltimo = indice === momentos.length - 1;
+      botonSiguiente.textContent = esElUltimo ? 'Tengo una pregunta para ti' : 'Siguiente';
+      momentoActual = indice;
+      momentos[indice].querySelector('.momento-titulo').focus({ preventScroll: true });
+    }
+
+    function mostrarHistoria() {
+      registrarEvento('ver_historia');
+      escenaPoema.hidden = true;
+      escenaHistoria.hidden = false;
+      mostrarMomento(0);
+    }
+
+    function avanzarHistoria() {
+      if (momentoActual < momentos.length - 1) return mostrarMomento(momentoActual + 1);
+      clearInterval(paseDelMomento);
+      mostrarPregunta();
+    }
+
     function mostrarPregunta() {
       registrarEvento('ver_pregunta');
+      escenaHistoria.hidden = true;
       escenaPoema.hidden = true;
       escenaPregunta.hidden = false;
       titulo.focus();
@@ -973,7 +1150,8 @@
     }
 
     sobre.addEventListener('click', abrirCarta);
-    botonContinuar.addEventListener('click', mostrarPregunta);
+    botonContinuar.addEventListener('click', mostrarHistoria);
+    botonSiguiente.addEventListener('click', avanzarHistoria);
     botonMusica.addEventListener('click', alternarMusica);
     botonSi.addEventListener('click', aceptar);
 

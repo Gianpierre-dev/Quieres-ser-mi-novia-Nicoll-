@@ -16,12 +16,14 @@ const DURACION_SESION_MS = 7 * 24 * 60 * 60 * 1000;
 const TRAZO_CORAZON = 'M12 21s-7.5-4.6-9.6-9.2C.9 8.3 2.9 4.5 6.6 4.5c2.2 0 3.9 1.2 5.4 3.2 1.5-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z';
 
 const CANTIDAD_FOTOS = 6;
+const FOTOS_HISTORIA = ['menciones', 'videollamada', 'juntos-1', 'juntos-2', 'juntos-3', 'ella-1', 'ella-2'];
 const CACHE_MEDIOS = 'public, max-age=86400';
 const PATRON_RANGO = /^bytes=(\d*)-(\d*)$/;
 
 const ETIQUETAS_EVENTO = {
   abrir_pagina: 'Abrió el enlace',
   abrir_carta: 'Abrió la carta',
+  ver_historia: 'Vio la historia',
   ver_pregunta: 'Llegó a la pregunta',
   clic_no: 'Tocó «No»',
   clic_si: 'Tocó «Sí»',
@@ -34,6 +36,10 @@ const ARCHIVOS_PUBLICOS = {
   '/vista-previa.png': { nombre: 'vista-previa.png', tipo: 'image/png' },
   '/cancion.mp3': { nombre: 'cancion.mp3', tipo: 'audio/mpeg', cache: CACHE_MEDIOS },
 };
+
+for (const nombre of FOTOS_HISTORIA) {
+  ARCHIVOS_PUBLICOS[`/img/historia/${nombre}.jpg`] = { nombre: `img/historia/${nombre}.jpg`, tipo: 'image/jpeg', cache: CACHE_MEDIOS };
+}
 
 for (let numero = 1; numero <= CANTIDAD_FOTOS; numero += 1) {
   ARCHIVOS_PUBLICOS[`/img/${numero}.png`] = { nombre: `img/${numero}.png`, tipo: 'image/png', cache: CACHE_MEDIOS };
