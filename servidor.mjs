@@ -169,7 +169,8 @@ function construirPanel(eventos) {
     table { width: 100%; border-collapse: collapse; background: #fff; font-variant-numeric: tabular-nums; }
     th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #dcc7ff; white-space: nowrap; }
     th { font-size: 0.875rem; }
-    .acciones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+    .acciones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+    .acciones form { margin: 0; }
     a.boton, button { padding: 12px 20px; font: inherit; font-weight: 700; border-radius: 999px; cursor: pointer; text-decoration: none; }
     a.boton { background: #5b1fa6; color: #fff; border: 2px solid #5b1fa6; }
     button { background: #fff; color: #b50d30; border: 2px solid #b50d30; }
@@ -181,15 +182,15 @@ function construirPanel(eventos) {
   <main>
     <h1>Actividad de la tarjeta</h1>
     <p>Total de acciones registradas: ${eventos.length}. Visitas distintas: ${visitas.size}.</p>
-    <ul>${tarjetas}</ul>
-    <h2>Historial</h2>
-    <div class="tabla">${historial}</div>
     <div class="acciones">
       <a class="boton" href="/panel">Actualizar</a>
       <form method="post" action="/panel/reiniciar" onsubmit="return confirm('Se borrará todo el historial. ¿Deseas continuar?')">
-        <button type="submit">Reiniciar conteo</button>
+        <button type="submit">Reiniciar todo</button>
       </form>
     </div>
+    <ul>${tarjetas}</ul>
+    <h2>Historial</h2>
+    <div class="tabla">${historial}</div>
   </main>
 </body>
 </html>`;
