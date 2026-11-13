@@ -359,6 +359,12 @@ function numerarVisitas(eventos) {
   return numeros;
 }
 
+function resumenDeActividad(totalAcciones, totalVisitas) {
+  const acciones = totalAcciones === 1 ? '1 acción registrada' : `${totalAcciones} acciones registradas`;
+  const visitas = totalVisitas === 1 ? '1 visita' : `${totalVisitas} visitas`;
+  return `${acciones} en ${visitas}.`;
+}
+
 function construirPanel(eventos) {
   const conteos = Object.fromEntries(Object.keys(ETIQUETAS_EVENTO).map((tipo) => [tipo, 0]));
   for (const evento of eventos) conteos[evento.tipo] += 1;
@@ -389,7 +395,7 @@ function construirPanel(eventos) {
   <main class="hoja">
     <div class="emblema">${ICONO_CORAZON}</div>
     <h1>Actividad de la tarjeta</h1>
-    <p class="bajada">${eventos.length} acciones registradas en ${visitas.size} visitas.</p>
+    <p class="bajada">${resumenDeActividad(eventos.length, visitas.size)}</p>
     <div class="acciones">
       <a class="boton boton-principal" href="/panel">Actualizar</a>
       <button type="button" class="boton boton-secundario" id="abrir-reinicio">Reiniciar todo</button>
