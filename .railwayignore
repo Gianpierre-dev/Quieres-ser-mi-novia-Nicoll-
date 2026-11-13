@@ -2,3 +2,5 @@ node_modules
 .git
 .atl
 .impeccable
+img-video
+*.mp4
