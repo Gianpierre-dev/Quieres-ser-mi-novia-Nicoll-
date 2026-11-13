@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Para Nicoll</title>
+  <meta name="description" content="Una pregunta para Nicoll.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,500&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ciruela: #2a0d1c;
+      --ciruela-clara: #4a1630;
+      --papel: #fff0f3;
+      --rosa: #f4b8c6;
+      --carmesi: #b3123a;
+      --carmesi-oscuro: #8c0c2c;
+      --tinta: #3a0f20;
+      --dorado: #e2b25a;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 24px 16px;
+      overflow: hidden;
+      font-family: "Figtree", system-ui, sans-serif;
+      color: var(--tinta);
+      background:
+        radial-gradient(120% 80% at 50% 110%, var(--ciruela-clara) 0%, transparent 60%),
+        var(--ciruela);
+    }
+
+    .tarjeta {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 520px);
+      padding: clamp(36px, 8vw, 64px) clamp(24px, 6vw, 56px);
+      text-align: center;
+      background: var(--papel);
+      border-radius: 6px;
+      box-shadow:
+        0 0 0 1px var(--rosa),
+        0 0 0 10px var(--papel),
+        0 0 0 11px var(--dorado),
+        0 40px 80px -30px rgba(0, 0, 0, 0.7);
+    }
+
+    .titulo {
+      margin: 0;
+      font-family: "Bodoni Moda", "Didot", Georgia, serif;
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(2.25rem, 9vw, 3.5rem);
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      color: var(--carmesi);
+      text-wrap: balance;
+    }
+
+    .titulo .nombre {
+      display: block;
+      font-style: normal;
+    }
+
+    .acciones {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: clamp(32px, 7vw, 48px);
+    }
+
+    .boton {
+      min-width: 112px;
+      padding: 14px 28px;
+      font: inherit;
+      font-weight: 600;
+      font-size: 1.0625rem;
+      border-radius: 999px;
+      border: 1.5px solid var(--carmesi);
+      cursor: pointer;
+      transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
+    }
+
+    .boton:focus-visible {
+      outline: 3px solid var(--dorado);
+      outline-offset: 3px;
+    }
+
+    .boton-si {
+      background: var(--carmesi);
+      color: var(--papel);
+    }
+
+    .boton-si:hover { background: var(--carmesi-oscuro); }
+    .boton-si:active { transform: scale(0.97); }
+
+    .boton-no {
+      background: transparent;
+      color: var(--carmesi);
+    }
+
+    .boton-no:hover { background: rgba(179, 18, 58, 0.08); }
+
+    .aviso {
+      min-height: 1.5em;
+      margin: 20px 0 0;
+      font-size: 0.9375rem;
+      color: var(--tinta);
+    }
+
+    .respuesta {
+      margin: 0;
+      font-family: "Bodoni Moda", "Didot", Georgia, serif;
+      font-weight: 500;
+      font-size: clamp(1.5rem, 5.6vw, 2.125rem);
+      line-height: 1.3;
+      color: var(--carmesi);
+      text-wrap: pretty;
+    }
+
+    .respuesta:focus { outline: none; }
+
+    .respuesta span { display: block; }
+    .respuesta span + span { margin-top: 0.6em; }
+    .respuesta .cierre { font-style: italic; }
+
+    [hidden] { display: none !important; }
+
+    .cielo {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .corazon {
+      position: absolute;
+      bottom: -40px;
+      color: var(--rosa);
+      opacity: 0;
+      animation: subir linear forwards;
+    }
+
+    @keyframes subir {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+      12% { opacity: 0.9; }
+      100% { transform: translateY(-115vh) rotate(var(--giro)); opacity: 0; }
+    }
+
+    @keyframes aparecer {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .respuesta span { animation: aparecer 700ms ease both; }
+    .respuesta span:nth-child(2) { animation-delay: 900ms; }
+    .respuesta span:nth-child(3) { animation-delay: 2000ms; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .respuesta span { animation: none; }
+      .corazon { display: none; }
+      .boton { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cielo" id="cielo" aria-hidden="true"></div>
+
+  <main class="tarjeta">
+    <section id="pregunta">
+      <h1 class="titulo">¿Quieres ser mi novia <span class="nombre">Nicoll?</span></h1>
+      <div class="acciones">
+        <button type="button" class="boton boton-si" id="boton-si">Sí</button>
+        <button type="button" class="boton boton-no" id="boton-no">No</button>
+      </div>
+      <p class="aviso" id="aviso" role="status" aria-live="polite"></p>
+    </section>
+
+    <section id="respuesta" hidden>
+      <p class="respuesta" id="texto-respuesta" tabindex="-1">
+        <span>Lo sabía mi amor.</span>
+        <span>Yo también quiero estar contigo hasta el fin de los tiempos.</span>
+        <span class="cierre">Te amo como no tienes idea.</span>
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const CANTIDAD_CORAZONES = 26;
+    const MENSAJE_NO = 'Piénsalo otra vez, mi amor.';
+
+    const seccionPregunta = document.getElementById('pregunta');
+    const seccionRespuesta = document.getElementById('respuesta');
+    const textoRespuesta = document.getElementById('texto-respuesta');
+    const botonSi = document.getElementById('boton-si');
+    const botonNo = document.getElementById('boton-no');
+    const aviso = document.getElementById('aviso');
+    const cielo = document.getElementById('cielo');
+
+    const aleatorio = (minimo, maximo) => minimo + Math.random() * (maximo - minimo);
+
+    function soltarCorazones() {
+      for (let indice = 0; indice < CANTIDAD_CORAZONES; indice += 1) {
+        const corazon = document.createElement('span');
+        corazon.className = 'corazon';
+        corazon.textContent = '♥';
+        corazon.style.left = `${aleatorio(2, 96)}%`;
+        corazon.style.fontSize = `${aleatorio(14, 38)}px`;
+        corazon.style.animationDuration = `${aleatorio(5, 10)}s`;
+        corazon.style.animationDelay = `${aleatorio(0, 4)}s`;
+        corazon.style.setProperty('--giro', `${aleatorio(-40, 40)}deg`);
+        cielo.appendChild(corazon);
+      }
+    }
+
+    function aceptar() {
+      seccionPregunta.hidden = true;
+      seccionRespuesta.hidden = false;
+      textoRespuesta.focus();
+      soltarCorazones();
+    }
+
+    // El botón "No" se queda en su lugar: solo muestra un aviso.
+    function rechazar() {
+      aviso.textContent = MENSAJE_NO;
+    }
+
+    botonSi.addEventListener('click', aceptar);
+    botonNo.addEventListener('click', rechazar);
+  </script>
+</body>
+</html>
