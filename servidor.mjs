@@ -39,8 +39,11 @@ const sesiones = new Map();
 
 const formatoFecha = new Intl.DateTimeFormat('es-PE', {
   timeZone: ZONA_HORARIA,
-  dateStyle: 'short',
-  timeStyle: 'medium',
+  day: '2-digit',
+  month: '2-digit',
+  hour: 'numeric',
+  minute: '2-digit',
+  second: '2-digit',
 });
 
 async function prepararBaseDeDatos() {
@@ -269,7 +272,7 @@ const ESTILOS_PANEL = `
   .contadores .destacado strong, .contadores .destacado span { color: #fff; }
   .tabla { overflow-x: auto; border: 2px solid var(--lila); border-radius: 18px; background: #fff; }
   table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
-  th, td { padding: 12px 14px; text-align: left; white-space: nowrap; }
+  th, td { padding: 12px 10px; text-align: left; white-space: nowrap; font-size: 0.9375rem; }
   th { font-size: 0.875rem; color: var(--vino); background: var(--rosa-papel); }
   tbody tr + tr td { border-top: 1px solid var(--lila); }
   .vacio { margin: 0; padding: 24px 16px; text-align: center; font-weight: 600; }
@@ -377,7 +380,7 @@ function construirPanel(eventos) {
     .join('');
 
   const historial = eventos.length
-    ? `<table><thead><tr><th scope="col">Fecha y hora (Lima)</th><th scope="col">Visita</th><th scope="col">Acción</th></tr></thead><tbody>${filas}</tbody></table>`
+    ? `<table><thead><tr><th scope="col">Hora (Lima)</th><th scope="col">Visita</th><th scope="col">Acción</th></tr></thead><tbody>${filas}</tbody></table>`
     : '<p class="vacio">Todavía no hay actividad. Cuando abra la tarjeta, aparecerá aquí.</p>';
 
   return plantilla({
